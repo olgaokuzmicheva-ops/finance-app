@@ -69,6 +69,12 @@
       "name": "Другое",
       "icon": "📦",
       "builtin": true
+    },
+    {
+      "id": "clothing",
+      "name": "Одежда",
+      "icon": "👕",
+      "builtin": false
     }
   ],
   "expenses": [
