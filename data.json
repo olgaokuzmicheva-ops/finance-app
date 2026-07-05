@@ -152,7 +152,7 @@
     },
     {
       "id": 10,
-      "amount": 155.0,
+      "amount": 110.0,
       "category": "cafe",
       "author": "Папа",
       "note": "Nord Coffee",
@@ -192,7 +192,7 @@
     },
     {
       "id": 15,
-      "amount": 363.0,
+      "amount": 243.0,
       "category": "cafe",
       "author": "Папа",
       "note": "Senate",
