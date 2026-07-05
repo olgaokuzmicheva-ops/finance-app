@@ -79,6 +79,14 @@
       "author": "Ольга",
       "note": "салями",
       "daysAgo": 0
+    },
+    {
+      "id": 2,
+      "amount": 8.64,
+      "category": "food",
+      "author": "Папа",
+      "note": "курица",
+      "daysAgo": 0
     }
   ]
 }
