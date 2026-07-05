@@ -87,6 +87,14 @@
       "author": "Ольга",
       "note": "магазин",
       "daysAgo": 0
+    },
+    {
+      "id": 3,
+      "amount": 10.0,
+      "category": "food",
+      "author": "Ольга",
+      "note": "голубика",
+      "daysAgo": 1
     }
   ]
 }
