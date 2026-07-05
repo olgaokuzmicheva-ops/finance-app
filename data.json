@@ -1,0 +1,1036 @@
+{
+  "settings": {
+    "baseCurrency": "GEL",
+    "displayCurrency": "GEL",
+    "monthlyBudget": 2500,
+    "dailyLimit": 90,
+    "users": [
+      "Ольга",
+      "Папа"
+    ],
+    "rateHistory": {
+      "2026-03-01": {
+        "RUB": 28.4,
+        "USD": 0.3725
+      },
+      "2026-05-01": {
+        "RUB": 28.95,
+        "USD": 0.376
+      },
+      "2026-06-15": {
+        "RUB": 29.1,
+        "USD": 0.3775
+      },
+      "2026-07-05": {
+        "RUB": 29.33,
+        "USD": 0.3788
+      }
+    }
+  },
+  "categories": [
+    {
+      "id": "food",
+      "name": "Продукты",
+      "icon": "🛒",
+      "builtin": true
+    },
+    {
+      "id": "cafe",
+      "name": "Кафе",
+      "icon": "☕",
+      "builtin": true
+    },
+    {
+      "id": "transport",
+      "name": "Транспорт",
+      "icon": "🚗",
+      "builtin": true
+    },
+    {
+      "id": "home",
+      "name": "Дом",
+      "icon": "🏠",
+      "builtin": true
+    },
+    {
+      "id": "health",
+      "name": "Здоровье",
+      "icon": "💊",
+      "builtin": true
+    },
+    {
+      "id": "fun",
+      "name": "Развлечения",
+      "icon": "🎬",
+      "builtin": true
+    },
+    {
+      "id": "other",
+      "name": "Другое",
+      "icon": "📦",
+      "builtin": true
+    }
+  ],
+  "expenses": [
+    {
+      "amount": 22,
+      "category": "transport",
+      "author": "Папа",
+      "note": "такси Bolt",
+      "daysAgo": 0,
+      "id": 1
+    },
+    {
+      "amount": 34,
+      "category": "food",
+      "author": "Ольга",
+      "note": "Магнити, к ужину",
+      "daysAgo": 0,
+      "id": 2
+    },
+    {
+      "id": 3,
+      "amount": 39,
+      "category": "food",
+      "author": "Ольга",
+      "note": "Спар",
+      "daysAgo": 1
+    },
+    {
+      "id": 4,
+      "amount": 134,
+      "category": "health",
+      "author": "Папа",
+      "note": "массаж",
+      "daysAgo": 1
+    },
+    {
+      "id": 5,
+      "amount": 50,
+      "category": "other",
+      "author": "Ольга",
+      "note": "мелочь",
+      "daysAgo": 2
+    },
+    {
+      "id": 6,
+      "amount": 37,
+      "category": "cafe",
+      "author": "Ольга",
+      "note": "кофе на набережной",
+      "daysAgo": 4
+    },
+    {
+      "id": 7,
+      "amount": 173,
+      "category": "home",
+      "author": "Папа",
+      "note": "коммуналка",
+      "daysAgo": 4
+    },
+    {
+      "id": 8,
+      "amount": 51,
+      "category": "transport",
+      "author": "Ольга",
+      "note": "бензин",
+      "daysAgo": 7
+    },
+    {
+      "id": 9,
+      "amount": 43,
+      "category": "transport",
+      "author": "Папа",
+      "note": "такси Bolt",
+      "daysAgo": 9
+    },
+    {
+      "id": 10,
+      "amount": 62,
+      "category": "other",
+      "author": "Ольга",
+      "note": "мелочь",
+      "daysAgo": 9
+    },
+    {
+      "id": 11,
+      "amount": 12,
+      "category": "cafe",
+      "author": "Папа",
+      "note": "бизнес-ланч",
+      "daysAgo": 12
+    },
+    {
+      "id": 12,
+      "amount": 80,
+      "category": "food",
+      "author": "Ольга",
+      "note": "овощи и фрукты",
+      "daysAgo": 13
+    },
+    {
+      "id": 13,
+      "amount": 11,
+      "category": "transport",
+      "author": "Папа",
+      "note": "такси Bolt",
+      "daysAgo": 13
+    },
+    {
+      "id": 14,
+      "amount": 67,
+      "category": "food",
+      "author": "Папа",
+      "note": "рынок",
+      "daysAgo": 16
+    },
+    {
+      "id": 15,
+      "amount": 17,
+      "category": "transport",
+      "author": "Папа",
+      "note": "такси Bolt",
+      "daysAgo": 16
+    },
+    {
+      "id": 16,
+      "amount": 34,
+      "category": "food",
+      "author": "Папа",
+      "note": "овощи и фрукты",
+      "daysAgo": 17
+    },
+    {
+      "id": 17,
+      "amount": 27,
+      "category": "cafe",
+      "author": "Ольга",
+      "note": "чай с подругой",
+      "daysAgo": 17
+    },
+    {
+      "id": 18,
+      "amount": 27,
+      "category": "cafe",
+      "author": "Ольга",
+      "note": "кофе на набережной",
+      "daysAgo": 17
+    },
+    {
+      "id": 19,
+      "amount": 44,
+      "category": "transport",
+      "author": "Ольга",
+      "note": "парковка",
+      "daysAgo": 17
+    },
+    {
+      "id": 20,
+      "amount": 60,
+      "category": "health",
+      "author": "Ольга",
+      "note": "анализы",
+      "daysAgo": 18
+    },
+    {
+      "id": 21,
+      "amount": 38,
+      "category": "fun",
+      "author": "Папа",
+      "note": "подарок",
+      "daysAgo": 21
+    },
+    {
+      "id": 22,
+      "amount": 37,
+      "category": "food",
+      "author": "Ольга",
+      "note": "мясо и рыба",
+      "daysAgo": 22
+    },
+    {
+      "id": 23,
+      "amount": 59,
+      "category": "food",
+      "author": "Папа",
+      "note": "бытовая химия",
+      "daysAgo": 22
+    },
+    {
+      "id": 24,
+      "amount": 25,
+      "category": "cafe",
+      "author": "Папа",
+      "note": "завтрак",
+      "daysAgo": 22
+    },
+    {
+      "id": 25,
+      "amount": 21,
+      "category": "home",
+      "author": "Папа",
+      "note": "коммуналка",
+      "daysAgo": 22
+    },
+    {
+      "id": 26,
+      "amount": 46,
+      "category": "food",
+      "author": "Ольга",
+      "note": "Спар",
+      "daysAgo": 23
+    },
+    {
+      "id": 27,
+      "amount": 55,
+      "category": "food",
+      "author": "Папа",
+      "note": "Магнити",
+      "daysAgo": 24
+    },
+    {
+      "id": 28,
+      "amount": 139,
+      "category": "home",
+      "author": "Папа",
+      "note": "коммуналка",
+      "daysAgo": 24
+    },
+    {
+      "id": 29,
+      "amount": 79,
+      "category": "home",
+      "author": "Папа",
+      "note": "средства для уборки",
+      "daysAgo": 24
+    },
+    {
+      "id": 30,
+      "amount": 56,
+      "category": "other",
+      "author": "Ольга",
+      "note": "подписки",
+      "daysAgo": 24
+    },
+    {
+      "id": 31,
+      "amount": 51,
+      "category": "food",
+      "author": "Ольга",
+      "note": "Вкусвилл-аналог",
+      "daysAgo": 26
+    },
+    {
+      "id": 32,
+      "amount": 30,
+      "category": "cafe",
+      "author": "Ольга",
+      "note": "бизнес-ланч",
+      "daysAgo": 26
+    },
+    {
+      "id": 33,
+      "amount": 14,
+      "category": "cafe",
+      "author": "Ольга",
+      "note": "десерт",
+      "daysAgo": 27
+    },
+    {
+      "id": 34,
+      "amount": 40,
+      "category": "transport",
+      "author": "Папа",
+      "note": "парковка",
+      "daysAgo": 28
+    },
+    {
+      "id": 35,
+      "amount": 117,
+      "category": "fun",
+      "author": "Ольга",
+      "note": "концерт",
+      "daysAgo": 28
+    },
+    {
+      "id": 36,
+      "amount": 65,
+      "category": "food",
+      "author": "Ольга",
+      "note": "Спар",
+      "daysAgo": 29
+    },
+    {
+      "id": 37,
+      "amount": 107,
+      "category": "health",
+      "author": "Папа",
+      "note": "аптека",
+      "daysAgo": 29
+    },
+    {
+      "id": 38,
+      "amount": 106,
+      "category": "fun",
+      "author": "Ольга",
+      "note": "книги",
+      "daysAgo": 31
+    },
+    {
+      "id": 39,
+      "amount": 51,
+      "category": "food",
+      "author": "Папа",
+      "note": "Спар",
+      "daysAgo": 32
+    },
+    {
+      "id": 40,
+      "amount": 30,
+      "category": "cafe",
+      "author": "Папа",
+      "note": "завтрак",
+      "daysAgo": 34
+    },
+    {
+      "id": 41,
+      "amount": 52,
+      "category": "food",
+      "author": "Ольга",
+      "note": "бытовая химия",
+      "daysAgo": 36
+    },
+    {
+      "id": 42,
+      "amount": 28,
+      "category": "transport",
+      "author": "Ольга",
+      "note": "маршрутка",
+      "daysAgo": 36
+    },
+    {
+      "id": 43,
+      "amount": 99,
+      "category": "fun",
+      "author": "Ольга",
+      "note": "подарок",
+      "daysAgo": 36
+    },
+    {
+      "id": 44,
+      "amount": 84,
+      "category": "food",
+      "author": "Ольга",
+      "note": "Спар",
+      "daysAgo": 37
+    },
+    {
+      "id": 45,
+      "amount": 42,
+      "category": "cafe",
+      "author": "Папа",
+      "note": "завтрак",
+      "daysAgo": 37
+    },
+    {
+      "id": 46,
+      "amount": 68,
+      "category": "food",
+      "author": "Ольга",
+      "note": "Вкусвилл-аналог",
+      "daysAgo": 38
+    },
+    {
+      "id": 47,
+      "amount": 53,
+      "category": "food",
+      "author": "Ольга",
+      "note": "рынок",
+      "daysAgo": 38
+    },
+    {
+      "id": 48,
+      "amount": 37,
+      "category": "cafe",
+      "author": "Папа",
+      "note": "обед вдвоём",
+      "daysAgo": 38
+    },
+    {
+      "id": 49,
+      "amount": 82,
+      "category": "food",
+      "author": "Ольга",
+      "note": "хлеб и выпечка",
+      "daysAgo": 39
+    },
+    {
+      "id": 50,
+      "amount": 30,
+      "category": "transport",
+      "author": "Папа",
+      "note": "такси Bolt",
+      "daysAgo": 39
+    },
+    {
+      "id": 51,
+      "amount": 49,
+      "category": "fun",
+      "author": "Ольга",
+      "note": "концерт",
+      "daysAgo": 39
+    },
+    {
+      "id": 52,
+      "amount": 72,
+      "category": "home",
+      "author": "Папа",
+      "note": "лампочки и провода",
+      "daysAgo": 40
+    },
+    {
+      "id": 53,
+      "amount": 91,
+      "category": "food",
+      "author": "Папа",
+      "note": "рынок",
+      "daysAgo": 41
+    },
+    {
+      "id": 54,
+      "amount": 71,
+      "category": "home",
+      "author": "Ольга",
+      "note": "коммуналка",
+      "daysAgo": 41
+    },
+    {
+      "id": 55,
+      "amount": 15,
+      "category": "transport",
+      "author": "Папа",
+      "note": "такси Bolt",
+      "daysAgo": 42
+    },
+    {
+      "id": 56,
+      "amount": 89,
+      "category": "food",
+      "author": "Папа",
+      "note": "бытовая химия",
+      "daysAgo": 43
+    },
+    {
+      "id": 57,
+      "amount": 24,
+      "category": "food",
+      "author": "Ольга",
+      "note": "бытовая химия",
+      "daysAgo": 45
+    },
+    {
+      "id": 58,
+      "amount": 69,
+      "category": "food",
+      "author": "Папа",
+      "note": "молочка",
+      "daysAgo": 47
+    },
+    {
+      "id": 59,
+      "amount": 20,
+      "category": "health",
+      "author": "Папа",
+      "note": "анализы",
+      "daysAgo": 47
+    },
+    {
+      "id": 60,
+      "amount": 32,
+      "category": "transport",
+      "author": "Ольга",
+      "note": "бензин",
+      "daysAgo": 48
+    },
+    {
+      "id": 61,
+      "amount": 18,
+      "category": "transport",
+      "author": "Папа",
+      "note": "бензин",
+      "daysAgo": 49
+    },
+    {
+      "id": 62,
+      "amount": 50,
+      "category": "food",
+      "author": "Ольга",
+      "note": "Магнити",
+      "daysAgo": 53
+    },
+    {
+      "id": 63,
+      "amount": 76,
+      "category": "other",
+      "author": "Ольга",
+      "note": "непредвиденное",
+      "daysAgo": 53
+    },
+    {
+      "id": 64,
+      "amount": 101,
+      "category": "home",
+      "author": "Ольга",
+      "note": "коммуналка",
+      "daysAgo": 55
+    },
+    {
+      "id": 65,
+      "amount": 41,
+      "category": "cafe",
+      "author": "Ольга",
+      "note": "завтрак",
+      "daysAgo": 56
+    },
+    {
+      "id": 66,
+      "amount": 13,
+      "category": "cafe",
+      "author": "Ольга",
+      "note": "завтрак",
+      "daysAgo": 57
+    },
+    {
+      "id": 67,
+      "amount": 118,
+      "category": "fun",
+      "author": "Папа",
+      "note": "книги",
+      "daysAgo": 57
+    },
+    {
+      "id": 68,
+      "amount": 40,
+      "category": "cafe",
+      "author": "Папа",
+      "note": "завтрак",
+      "daysAgo": 58
+    },
+    {
+      "id": 69,
+      "amount": 55,
+      "category": "other",
+      "author": "Ольга",
+      "note": "одежда",
+      "daysAgo": 58
+    },
+    {
+      "id": 70,
+      "amount": 36,
+      "category": "cafe",
+      "author": "Ольга",
+      "note": "завтрак",
+      "daysAgo": 60
+    },
+    {
+      "id": 71,
+      "amount": 38,
+      "category": "transport",
+      "author": "Ольга",
+      "note": "бензин",
+      "daysAgo": 60
+    },
+    {
+      "id": 72,
+      "amount": 12,
+      "category": "cafe",
+      "author": "Папа",
+      "note": "бизнес-ланч",
+      "daysAgo": 63
+    },
+    {
+      "id": 73,
+      "amount": 136,
+      "category": "health",
+      "author": "Папа",
+      "note": "стоматолог",
+      "daysAgo": 64
+    },
+    {
+      "id": 74,
+      "amount": 87,
+      "category": "food",
+      "author": "Ольга",
+      "note": "Спар",
+      "daysAgo": 66
+    },
+    {
+      "id": 75,
+      "amount": 3,
+      "category": "transport",
+      "author": "Ольга",
+      "note": "маршрутка",
+      "daysAgo": 66
+    },
+    {
+      "id": 76,
+      "amount": 30,
+      "category": "food",
+      "author": "Папа",
+      "note": "рынок",
+      "daysAgo": 67
+    },
+    {
+      "id": 77,
+      "amount": 43,
+      "category": "transport",
+      "author": "Папа",
+      "note": "парковка",
+      "daysAgo": 67
+    },
+    {
+      "id": 78,
+      "amount": 94,
+      "category": "food",
+      "author": "Ольга",
+      "note": "рынок",
+      "daysAgo": 68
+    },
+    {
+      "id": 79,
+      "amount": 178,
+      "category": "home",
+      "author": "Ольга",
+      "note": "коммуналка",
+      "daysAgo": 68
+    },
+    {
+      "id": 80,
+      "amount": 32,
+      "category": "cafe",
+      "author": "Ольга",
+      "note": "кофе на набережной",
+      "daysAgo": 69
+    },
+    {
+      "id": 81,
+      "amount": 55,
+      "category": "food",
+      "author": "Ольга",
+      "note": "мясо и рыба",
+      "daysAgo": 72
+    },
+    {
+      "id": 82,
+      "amount": 28,
+      "category": "cafe",
+      "author": "Ольга",
+      "note": "десерт",
+      "daysAgo": 73
+    },
+    {
+      "id": 83,
+      "amount": 35,
+      "category": "other",
+      "author": "Папа",
+      "note": "одежда",
+      "daysAgo": 73
+    },
+    {
+      "id": 84,
+      "amount": 28,
+      "category": "cafe",
+      "author": "Папа",
+      "note": "завтрак",
+      "daysAgo": 76
+    },
+    {
+      "id": 85,
+      "amount": 30,
+      "category": "health",
+      "author": "Ольга",
+      "note": "стоматолог",
+      "daysAgo": 76
+    },
+    {
+      "id": 86,
+      "amount": 36,
+      "category": "home",
+      "author": "Папа",
+      "note": "коммуналка",
+      "daysAgo": 78
+    },
+    {
+      "id": 87,
+      "amount": 34,
+      "category": "transport",
+      "author": "Ольга",
+      "note": "маршрутка",
+      "daysAgo": 81
+    },
+    {
+      "id": 88,
+      "amount": 49,
+      "category": "food",
+      "author": "Папа",
+      "note": "хлеб и выпечка",
+      "daysAgo": 82
+    },
+    {
+      "id": 89,
+      "amount": 48,
+      "category": "transport",
+      "author": "Ольга",
+      "note": "парковка",
+      "daysAgo": 82
+    },
+    {
+      "id": 90,
+      "amount": 24,
+      "category": "home",
+      "author": "Ольга",
+      "note": "бытовая мелочь",
+      "daysAgo": 82
+    },
+    {
+      "id": 91,
+      "amount": 32,
+      "category": "food",
+      "author": "Папа",
+      "note": "мясо и рыба",
+      "daysAgo": 84
+    },
+    {
+      "id": 92,
+      "amount": 94,
+      "category": "food",
+      "author": "Ольга",
+      "note": "Спар",
+      "daysAgo": 84
+    },
+    {
+      "id": 93,
+      "amount": 19,
+      "category": "transport",
+      "author": "Папа",
+      "note": "такси Bolt",
+      "daysAgo": 85
+    },
+    {
+      "id": 94,
+      "amount": 60,
+      "category": "food",
+      "author": "Папа",
+      "note": "молочка",
+      "daysAgo": 86
+    },
+    {
+      "id": 95,
+      "amount": 29,
+      "category": "cafe",
+      "author": "Ольга",
+      "note": "чай с подругой",
+      "daysAgo": 86
+    },
+    {
+      "id": 96,
+      "amount": 83,
+      "category": "health",
+      "author": "Папа",
+      "note": "аптека",
+      "daysAgo": 86
+    },
+    {
+      "id": 97,
+      "amount": 24,
+      "category": "transport",
+      "author": "Папа",
+      "note": "такси Bolt",
+      "daysAgo": 87
+    },
+    {
+      "id": 98,
+      "amount": 57,
+      "category": "other",
+      "author": "Ольга",
+      "note": "подписки",
+      "daysAgo": 88
+    },
+    {
+      "id": 99,
+      "amount": 96,
+      "category": "fun",
+      "author": "Ольга",
+      "note": "прогулка и мороженое",
+      "daysAgo": 89
+    },
+    {
+      "id": 100,
+      "amount": 29,
+      "category": "cafe",
+      "author": "Ольга",
+      "note": "десерт",
+      "daysAgo": 91
+    },
+    {
+      "id": 101,
+      "amount": 16,
+      "category": "cafe",
+      "author": "Ольга",
+      "note": "чай с подругой",
+      "daysAgo": 93
+    },
+    {
+      "id": 102,
+      "amount": 77,
+      "category": "fun",
+      "author": "Ольга",
+      "note": "кино",
+      "daysAgo": 93
+    },
+    {
+      "id": 103,
+      "amount": 55,
+      "category": "food",
+      "author": "Папа",
+      "note": "рынок",
+      "daysAgo": 94
+    },
+    {
+      "id": 104,
+      "amount": 31,
+      "category": "food",
+      "author": "Папа",
+      "note": "Магнити",
+      "daysAgo": 94
+    },
+    {
+      "id": 105,
+      "amount": 55,
+      "category": "fun",
+      "author": "Ольга",
+      "note": "ресторан",
+      "daysAgo": 94
+    },
+    {
+      "id": 106,
+      "amount": 18,
+      "category": "cafe",
+      "author": "Ольга",
+      "note": "обед вдвоём",
+      "daysAgo": 95
+    },
+    {
+      "id": 107,
+      "amount": 82,
+      "category": "food",
+      "author": "Ольга",
+      "note": "рынок",
+      "daysAgo": 96
+    },
+    {
+      "id": 108,
+      "amount": 17,
+      "category": "cafe",
+      "author": "Ольга",
+      "note": "обед вдвоём",
+      "daysAgo": 96
+    },
+    {
+      "id": 109,
+      "amount": 45,
+      "category": "home",
+      "author": "Ольга",
+      "note": "интернет",
+      "daysAgo": 96
+    },
+    {
+      "id": 110,
+      "amount": 25,
+      "category": "food",
+      "author": "Папа",
+      "note": "рынок",
+      "daysAgo": 99
+    },
+    {
+      "id": 111,
+      "amount": 57,
+      "category": "food",
+      "author": "Папа",
+      "note": "Спар",
+      "daysAgo": 101
+    },
+    {
+      "id": 112,
+      "amount": 42,
+      "category": "cafe",
+      "author": "Папа",
+      "note": "хачапури",
+      "daysAgo": 101
+    },
+    {
+      "id": 113,
+      "amount": 130,
+      "category": "health",
+      "author": "Папа",
+      "note": "аптека",
+      "daysAgo": 101
+    },
+    {
+      "id": 114,
+      "amount": 41,
+      "category": "transport",
+      "author": "Ольга",
+      "note": "мойка машины",
+      "daysAgo": 102
+    },
+    {
+      "id": 115,
+      "amount": 39,
+      "category": "transport",
+      "author": "Папа",
+      "note": "такси Bolt",
+      "daysAgo": 102
+    },
+    {
+      "id": 116,
+      "amount": 66,
+      "category": "food",
+      "author": "Ольга",
+      "note": "Вкусвилл-аналог",
+      "daysAgo": 103
+    },
+    {
+      "id": 117,
+      "amount": 26,
+      "category": "cafe",
+      "author": "Ольга",
+      "note": "кофе на набережной",
+      "daysAgo": 105
+    },
+    {
+      "id": 118,
+      "amount": 30,
+      "category": "transport",
+      "author": "Папа",
+      "note": "маршрутка",
+      "daysAgo": 105
+    },
+    {
+      "id": 119,
+      "amount": 65,
+      "category": "fun",
+      "author": "Ольга",
+      "note": "подарок",
+      "daysAgo": 105
+    },
+    {
+      "id": 120,
+      "amount": 53,
+      "category": "other",
+      "author": "Папа",
+      "note": "непредвиденное",
+      "daysAgo": 107
+    }
+  ]
+}

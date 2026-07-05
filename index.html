@@ -1,0 +1,1889 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Семейный бюджет</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root {
+      --bg-top: #eef3fc; --bg-bottom: #e5ecf8; --card: #ffffff;
+      --navy: #172038; --navy-soft: #21304f; --blue: #2f6bff; --blue-light: #5b8bff; --violet: #7a6cff;
+      --track: #e9eef7; --ink: #16203a; --ink-2: #59647c; --ink-3: #97a1b5; --line: #eef1f7;
+      --danger: #e5484d; --ok: #17b26a;
+      --radius: 24px; --radius-sm: 16px;
+      --shadow: 0 10px 30px rgba(28,55,110,0.08); --shadow-soft: 0 6px 18px rgba(28,55,110,0.06);
+      --pad: 18px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body { height: 100%; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif; background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%); color: var(--ink); min-height: 100vh; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+    .app { max-width: 480px; margin: 0 auto; padding: max(env(safe-area-inset-top), 14px) var(--pad) 108px; min-height: 100vh; }
+    .screen { display: none; }
+    .screen.active { display: block; animation: fade .25s ease; }
+    @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+    .header { display: flex; align-items: center; justify-content: space-between; margin: 6px 2px 16px; }
+    .header .greeting { font-size: 14px; color: var(--ink-2); font-weight: 500; }
+    .header .title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; margin-top: 2px; }
+    .icon-btn { width: 44px; height: 44px; border-radius: 14px; background: var(--card); border: none; box-shadow: var(--shadow-soft); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--ink); flex-shrink: 0; transition: transform .12s ease; }
+    .icon-btn:active { transform: scale(0.94); }
+
+    .cur-switch { display: inline-flex; gap: 3px; background: var(--card); border-radius: 12px; padding: 3px; box-shadow: var(--shadow-soft); }
+    .cur-switch button { border: none; background: transparent; cursor: pointer; font-family: inherit; padding: 7px 13px; border-radius: 9px; font-size: 15px; font-weight: 700; color: var(--ink-3); transition: all .18s ease; }
+    .cur-switch button.active { background: var(--navy); color: #fff; }
+    .row-between { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .rate-hint { font-size: 12px; color: var(--ink-3); font-weight: 500; }
+
+    .hero { background: linear-gradient(150deg, var(--navy) 0%, var(--navy-soft) 100%); border-radius: var(--radius); padding: 22px; color: #fff; box-shadow: var(--shadow); position: relative; overflow: hidden; }
+    .hero::after { content: ""; position: absolute; right: -40px; top: -60px; width: 180px; height: 180px; background: radial-gradient(circle, rgba(91,139,255,0.35) 0%, rgba(91,139,255,0) 70%); pointer-events: none; }
+    .hero-top { display: flex; justify-content: space-between; align-items: flex-start; position: relative; z-index: 1; }
+    .hero-label { font-size: 13px; color: rgba(255,255,255,0.65); font-weight: 500; }
+    .hero-amount { font-size: 36px; font-weight: 700; letter-spacing: -0.03em; margin-top: 6px; line-height: 1; }
+    .hero-alt { font-size: 13px; color: rgba(255,255,255,0.55); margin-top: 7px; }
+    .hero-plan { font-size: 13px; color: rgba(255,255,255,0.6); margin-top: 3px; }
+    .hero-pct { background: rgba(255,255,255,0.12); border-radius: 12px; padding: 8px 12px; font-size: 15px; font-weight: 700; }
+    .hero-bar { margin-top: 18px; height: 10px; border-radius: 6px; background: rgba(255,255,255,0.14); overflow: hidden; position: relative; z-index: 1; }
+    .hero-bar > span { display: block; height: 100%; border-radius: 6px; background: linear-gradient(90deg, var(--blue) 0%, var(--blue-light) 100%); transition: width .5s cubic-bezier(.4,0,.2,1); }
+    .hero-foot { margin-top: 12px; font-size: 13px; color: rgba(255,255,255,0.7); display: flex; justify-content: space-between; position: relative; z-index: 1; }
+    .hero-foot b { color: #fff; font-weight: 600; }
+    .over { color: #ff9ea0 !important; }
+
+    .segment { display: flex; gap: 4px; background: var(--card); border-radius: 14px; padding: 4px; margin: 16px 0; box-shadow: var(--shadow-soft); }
+    .segment button { flex: 1; border: none; background: transparent; cursor: pointer; padding: 11px; border-radius: 11px; font-size: 15px; font-weight: 600; color: var(--ink-2); transition: all .2s ease; font-family: inherit; }
+    .segment button.active { background: var(--blue); color: #fff; box-shadow: 0 4px 12px rgba(47,107,255,0.3); }
+
+    .card { background: var(--card); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow-soft); margin-bottom: 16px; }
+    .card-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 16px; }
+    .card-head h2 { font-size: 17px; font-weight: 700; letter-spacing: -0.01em; }
+    .card-head .sub { font-size: 13px; color: var(--ink-3); font-weight: 500; }
+
+    .daily-row { display: flex; align-items: center; justify-content: space-between; }
+    .daily-main .n { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
+    .daily-main .of { font-size: 14px; color: var(--ink-3); font-weight: 500; }
+    .daily-left { text-align: right; }
+    .daily-left .lbl { font-size: 12px; color: var(--ink-3); }
+    .daily-left .val { font-size: 16px; font-weight: 700; color: var(--ok); }
+    .daily-left .val.over { color: var(--danger); }
+    .daily-bar { margin-top: 14px; height: 8px; border-radius: 5px; background: var(--track); overflow: hidden; }
+    .daily-bar > span { display: block; height: 100%; border-radius: 5px; background: linear-gradient(90deg, var(--blue), var(--blue-light)); transition: width .5s cubic-bezier(.4,0,.2,1); }
+    .daily-bar > span.over { background: linear-gradient(90deg, #f0787b, var(--danger)); }
+
+    /* Week chart */
+    .week-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+    .week-nav .wk-range { font-size: 15px; font-weight: 700; }
+    .week-arrow { width: 34px; height: 34px; border-radius: 11px; background: #f2f5fb; border: none; cursor: pointer; color: var(--ink-2); display: flex; align-items: center; justify-content: center; transition: all .12s; }
+    .week-arrow:active { transform: scale(0.9); }
+    .week-arrow:disabled { opacity: 0.35; cursor: default; }
+    .week-chart-wrap { touch-action: pan-y; user-select: none; }
+    .week-chart { display: flex; align-items: flex-end; justify-content: space-between; gap: 7px; height: 150px; padding-top: 16px; }
+    .wk-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; }
+    .wk-val { font-size: 10px; font-weight: 700; color: var(--ink-2); height: 12px; white-space: nowrap; }
+    .wk-track { width: 100%; max-width: 34px; background: var(--track); border-radius: 7px; display: flex; align-items: flex-end; overflow: hidden; height: 100%; }
+    .wk-fill { width: 100%; border-radius: 7px 7px 0 0; background: linear-gradient(180deg, var(--blue-light), var(--blue)); transition: height .45s cubic-bezier(.4,0,.2,1); min-height: 3px; }
+    .wk-col.today .wk-fill { background: linear-gradient(180deg, #9db8ff, var(--blue)); box-shadow: 0 0 0 3px rgba(47,107,255,0.15); }
+    .wk-col.today .wk-day { color: var(--blue); font-weight: 700; }
+    .wk-day { font-size: 12px; color: var(--ink-3); font-weight: 600; }
+    .wk-num { font-size: 10px; color: var(--ink-3); }
+    .week-foot { display: flex; justify-content: space-between; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); }
+    .week-foot .wf { }
+    .week-foot .wf .l { font-size: 12px; color: var(--ink-3); font-weight: 500; }
+    .week-foot .wf .v { font-size: 17px; font-weight: 700; margin-top: 2px; }
+    .swipe-hint { text-align: center; font-size: 11px; color: var(--ink-3); margin-top: 10px; }
+
+    /* Categories */
+    .cat { display: flex; align-items: center; gap: 14px; padding: 13px 0; border-bottom: 1px solid var(--line); cursor: pointer; transition: opacity .12s; }
+    .cat:last-child { border-bottom: none; padding-bottom: 0; }
+    .cat:first-child { padding-top: 0; }
+    .cat:active { opacity: 0.6; }
+    .cat-ico { width: 42px; height: 42px; border-radius: 13px; flex-shrink: 0; background: #f2f5fb; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .cat-body { flex: 1; min-width: 0; }
+    .cat-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 7px; }
+    .cat-name { font-size: 15px; font-weight: 600; }
+    .cat-sum { font-size: 15px; font-weight: 700; letter-spacing: -0.01em; }
+    .cat-bar { height: 6px; border-radius: 4px; background: var(--track); overflow: hidden; }
+    .cat-bar > span { display: block; height: 100%; border-radius: 4px; background: var(--blue); transition: width .5s cubic-bezier(.4,0,.2,1); }
+    .cat-pct { font-size: 12px; color: var(--ink-3); font-weight: 500; margin-left: 8px; }
+    .chev { color: var(--ink-3); flex-shrink: 0; }
+    .empty { text-align: center; padding: 28px 10px; color: var(--ink-3); font-size: 14px; line-height: 1.5; }
+
+    /* Analytics */
+    .chart { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; height: 170px; padding-top: 10px; }
+    .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; height: 100%; justify-content: flex-end; }
+    .bar-val { font-size: 11px; font-weight: 700; color: var(--ink-2); }
+    .bar-track { width: 100%; max-width: 42px; background: var(--track); border-radius: 8px 8px 4px 4px; display: flex; align-items: flex-end; overflow: hidden; height: 100%; }
+    .bar-fill { width: 100%; border-radius: 8px 8px 0 0; background: linear-gradient(180deg, var(--blue-light), var(--blue)); transition: height .6s cubic-bezier(.4,0,.2,1); min-height: 4px; }
+    .bar-col.current .bar-fill { background: linear-gradient(180deg, #9db8ff, var(--blue)); }
+    .bar-col.current .bar-lbl { color: var(--blue); font-weight: 700; }
+    .bar-lbl { font-size: 12px; color: var(--ink-3); font-weight: 600; }
+    .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .stat { background: #f7f9fd; border-radius: 16px; padding: 15px; }
+    .stat .lbl { font-size: 12px; color: var(--ink-3); font-weight: 600; margin-bottom: 6px; }
+    .stat .val { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; }
+    .stat .val small { font-size: 13px; color: var(--ink-3); font-weight: 600; }
+    .trend-up { color: var(--danger); font-size: 13px; font-weight: 700; }
+    .trend-down { color: var(--ok); font-size: 13px; font-weight: 700; }
+    .who { margin-bottom: 15px; }
+    .who:last-child { margin-bottom: 0; }
+    .who-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 7px; }
+    .who-name { font-size: 15px; font-weight: 600; }
+    .who-sum { font-size: 15px; font-weight: 700; }
+    .who-pct { font-size: 12px; color: var(--ink-3); margin-left: 8px; font-weight: 500; }
+    .who-bar { height: 8px; border-radius: 5px; background: var(--track); overflow: hidden; }
+    .who-bar > span { display: block; height: 100%; border-radius: 5px; transition: width .5s ease; }
+    .top-item { display: flex; align-items: center; gap: 13px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+    .top-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .top-item:first-child { padding-top: 0; }
+    .top-rank { width: 26px; height: 26px; border-radius: 8px; background: #f2f5fb; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: var(--ink-2); flex-shrink: 0; }
+    .top-body { flex: 1; min-width: 0; }
+    .top-note { font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .top-meta { font-size: 12px; color: var(--ink-3); margin-top: 2px; }
+    .top-sum { font-size: 15px; font-weight: 700; flex-shrink: 0; }
+
+    .navbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; max-width: 480px; margin: 0 auto; background: rgba(255,255,255,0.86); backdrop-filter: blur(14px); border-top: 1px solid rgba(30,60,120,0.06); display: flex; align-items: center; justify-content: space-around; padding: 8px 22px max(env(safe-area-inset-bottom), 10px); }
+    .nav-btn { border: none; background: transparent; cursor: pointer; font-family: inherit; display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--ink-3); padding: 4px 14px; transition: color .15s; }
+    .nav-btn.active { color: var(--blue); }
+    .nav-btn span { font-size: 11px; font-weight: 600; }
+    .nav-add { width: 58px; height: 58px; border-radius: 20px; background: var(--blue); color: #fff; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; margin-top: -22px; box-shadow: 0 10px 22px rgba(47,107,255,0.4); transition: transform .12s ease; flex-shrink: 0; }
+    .nav-add:active { transform: scale(0.93); }
+
+    .overlay { position: fixed; inset: 0; background: rgba(23,32,56,0.45); opacity: 0; pointer-events: none; transition: opacity .25s ease; z-index: 50; backdrop-filter: blur(2px); }
+    .overlay.show { opacity: 1; pointer-events: auto; }
+    .sheet { position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; background: var(--card); border-radius: 28px 28px 0 0; padding: 10px var(--pad) max(env(safe-area-inset-bottom), 22px); max-width: 480px; margin: 0 auto; transform: translateY(100%); transition: transform .3s cubic-bezier(.4,0,.2,1); max-height: 92vh; overflow-y: auto; }
+    .sheet.show { transform: translateY(0); }
+    .grip { width: 40px; height: 4px; border-radius: 3px; background: #d7dde9; margin: 6px auto 14px; }
+    .sheet h2 { font-size: 20px; font-weight: 700; margin-bottom: 4px; letter-spacing: -0.02em; }
+    .sheet .sheet-sub { font-size: 13px; color: var(--ink-3); margin-bottom: 18px; line-height: 1.5; }
+    .sect-title { font-size: 13px; font-weight: 700; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.03em; margin: 24px 0 12px; }
+
+    .field { margin-bottom: 18px; }
+    .field label { display: block; font-size: 13px; color: var(--ink-2); font-weight: 600; margin-bottom: 8px; }
+    .amount-input { display: flex; align-items: center; background: #f2f5fb; border-radius: 16px; padding: 4px 18px; }
+    .amount-input input { border: none; background: transparent; font-size: 32px; font-weight: 700; color: var(--ink); width: 100%; padding: 14px 0; outline: none; font-family: inherit; letter-spacing: -0.02em; }
+    .amount-cur { font-size: 24px; color: var(--ink-3); font-weight: 700; margin-left: 6px; }
+    .mini-cur { display: inline-flex; gap: 3px; margin-left: auto; }
+    .mini-cur button { border: none; background: #e7ecf6; color: var(--ink-3); cursor: pointer; font-family: inherit; font-size: 13px; font-weight: 700; padding: 6px 9px; border-radius: 8px; }
+    .mini-cur button.active { background: var(--navy); color: #fff; }
+    .txt-input { width: 100%; border: none; background: #f2f5fb; border-radius: 14px; padding: 15px 16px; font-size: 16px; color: var(--ink); outline: none; font-family: inherit; }
+    .txt-input::placeholder { color: var(--ink-3); }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip { border: none; cursor: pointer; font-family: inherit; background: #f2f5fb; color: var(--ink-2); font-size: 14px; font-weight: 600; padding: 11px 14px; border-radius: 13px; display: flex; align-items: center; gap: 7px; transition: all .15s ease; }
+    .chip .e { font-size: 16px; }
+    .chip.active { background: var(--blue); color: #fff; }
+    .toggle2 { display: flex; gap: 8px; }
+    .toggle2 button { flex: 1; border: none; cursor: pointer; font-family: inherit; background: #f2f5fb; color: var(--ink-2); font-size: 15px; font-weight: 600; padding: 14px; border-radius: 14px; transition: all .15s ease; }
+    .toggle2 button.active { background: var(--navy); color: #fff; }
+    .toggle3 { display: flex; gap: 8px; }
+    .toggle3 button { flex: 1; border: none; cursor: pointer; font-family: inherit; background: #f2f5fb; color: var(--ink-2); font-size: 14px; font-weight: 600; padding: 13px 6px; border-radius: 13px; transition: all .15s ease; }
+    .toggle3 button.active { background: var(--blue); color: #fff; }
+    .btn-save { width: 100%; border: none; cursor: pointer; font-family: inherit; background: var(--blue); color: #fff; font-size: 17px; font-weight: 700; padding: 17px; border-radius: 18px; margin-top: 6px; box-shadow: 0 8px 20px rgba(47,107,255,0.3); transition: transform .12s ease; }
+    .btn-save:active { transform: scale(0.98); }
+    .btn-save:disabled { opacity: 0.45; box-shadow: none; }
+    .btn-ghost { width: 100%; border: 1.5px solid var(--track); background: transparent; cursor: pointer; font-family: inherit; color: var(--ink-2); font-size: 15px; font-weight: 600; padding: 14px; border-radius: 16px; }
+
+    /* Manage categories */
+    .cm-item { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--line); }
+    .cm-item:last-child { border-bottom: none; }
+    .cm-ico { width: 36px; height: 36px; border-radius: 11px; background: #f2f5fb; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .cm-name { flex: 1; font-size: 15px; font-weight: 600; }
+    .cm-tag { font-size: 11px; color: var(--ink-3); background: #f2f5fb; padding: 3px 8px; border-radius: 7px; font-weight: 600; }
+    .cm-del { border: none; background: transparent; cursor: pointer; color: var(--ink-3); padding: 6px; }
+    .cm-del:active { color: var(--danger); }
+    .emoji-grid { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 12px; }
+    .emoji-btn { width: 40px; height: 40px; border-radius: 12px; border: none; background: #f2f5fb; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center; transition: all .12s; }
+    .emoji-btn.active { background: var(--blue); box-shadow: 0 0 0 2px rgba(47,107,255,0.3); }
+    .cm-add-row { display: flex; gap: 8px; }
+    .cm-add-row .txt-input { flex: 1; }
+    .cm-add-btn { border: none; background: var(--navy); color: #fff; cursor: pointer; font-family: inherit; font-size: 15px; font-weight: 700; padding: 0 18px; border-radius: 14px; flex-shrink: 0; }
+
+    /* rate history */
+    .rh-item { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+    .rh-item:last-child { border-bottom: none; }
+    .rh-date { color: var(--ink-2); font-weight: 600; }
+    .rh-val { color: var(--ink-3); font-weight: 600; }
+    .rh-item.is-today .rh-date { color: var(--blue); }
+
+    /* category detail */
+    .day-group { margin-bottom: 18px; }
+    .day-group:last-child { margin-bottom: 0; }
+    .day-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+    .day-date { font-size: 13px; font-weight: 700; color: var(--ink-2); }
+    .day-total { font-size: 13px; font-weight: 700; color: var(--ink-3); }
+    .exp-row { display: flex; align-items: center; gap: 12px; background: #f7f9fd; border-radius: 14px; padding: 12px 14px; margin-bottom: 8px; }
+    .exp-row:last-child { margin-bottom: 0; }
+    .exp-body { flex: 1; min-width: 0; }
+    .exp-note { font-size: 15px; font-weight: 600; }
+    .exp-author { font-size: 12px; color: var(--ink-3); margin-top: 2px; }
+    .exp-sum { font-size: 15px; font-weight: 700; }
+    .exp-del { border: none; background: transparent; cursor: pointer; color: var(--ink-3); padding: 6px; margin-right: -6px; flex-shrink: 0; }
+    .exp-del:active { color: var(--danger); }
+
+    .toast { position: fixed; left: 50%; bottom: 96px; transform: translateX(-50%) translateY(20px); background: var(--navy); color: #fff; font-size: 15px; font-weight: 600; padding: 14px 20px; border-radius: 16px; box-shadow: 0 12px 28px rgba(23,32,56,0.35); z-index: 80; opacity: 0; pointer-events: none; transition: opacity .25s ease, transform .25s ease; display: flex; align-items: center; gap: 9px; max-width: 88%; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .toast .tick { width: 22px; height: 22px; border-radius: 50%; background: var(--ok); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+    .state-screen { min-height: 70vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 12px; padding: 30px; }
+    .spinner { width: 34px; height: 34px; border-radius: 50%; border: 3px solid var(--track); border-top-color: var(--blue); animation: spin .8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .state-screen p { color: var(--ink-2); font-size: 15px; line-height: 1.5; }
+    @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+  </style>
+</head>
+<body>
+
+  <div id="loading" class="state-screen"><div class="spinner"></div><p>Загружаем бюджет…</p></div>
+
+  <div id="app" class="app" style="display:none">
+
+    <!-- OVERVIEW -->
+    <div class="screen active" id="screen-overview">
+      <div class="header">
+        <div><div class="greeting">Семейный кошелёк</div><div class="title">Наш бюджет</div></div>
+        <button class="icon-btn" id="btnSettings" aria-label="Настройки">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        </button>
+      </div>
+      <div class="row-between">
+        <span class="rate-hint" id="rateHint">курс —</span>
+        <div class="cur-switch" id="curSwitch"><button data-cur="GEL" class="active">₾</button><button data-cur="RUB">₽</button><button data-cur="USD">$</button></div>
+      </div>
+      <div class="hero">
+        <div class="hero-top">
+          <div>
+            <div class="hero-label" id="heroLabel">Потрачено за месяц</div>
+            <div class="hero-amount" id="heroAmount">—</div>
+            <div class="hero-alt" id="heroAlt"></div>
+            <div class="hero-plan" id="heroPlan"></div>
+          </div>
+          <div class="hero-pct" id="heroPct">0%</div>
+        </div>
+        <div class="hero-bar"><span id="heroBar" style="width:0%"></span></div>
+        <div class="hero-foot"><span id="heroFootLeft"></span><span id="heroFootRight"></span></div>
+      </div>
+      <div class="segment">
+        <button data-period="week">Неделя</button>
+        <button data-period="month" class="active">Месяц</button>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>Сегодня</h2><span class="sub">дневной лимит</span></div>
+        <div class="daily-row">
+          <div class="daily-main"><span class="n" id="dayN">—</span> <span class="of" id="dayOf"></span></div>
+          <div class="daily-left"><div class="lbl" id="dayLeftLbl">осталось</div><div class="val" id="dayLeftVal">—</div></div>
+        </div>
+        <div class="daily-bar"><span id="dayBar" style="width:0%"></span></div>
+      </div>
+      <div class="card">
+        <div class="week-nav">
+          <button class="week-arrow" id="wkPrev" aria-label="Раньше"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+          <span class="wk-range" id="wkRange">—</span>
+          <button class="week-arrow" id="wkNext" aria-label="Позже"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button>
+        </div>
+        <div class="week-chart-wrap" id="wkWrap"><div class="week-chart" id="wkChart"></div></div>
+        <div class="week-foot">
+          <div class="wf"><div class="l">Всего за неделю</div><div class="v" id="wkTotal">—</div></div>
+          <div class="wf" style="text-align:right"><div class="l">В среднем в день</div><div class="v" id="wkAvg">—</div></div>
+        </div>
+        <div class="swipe-hint">‹ листай неделю пальцем или стрелками ›</div>
+      </div>
+    </div>
+
+    <!-- ANALYTICS -->
+    <div class="screen" id="screen-analytics">
+      <div class="header">
+        <div><div class="greeting">Аналитика расходов</div><div class="title">Куда уходят деньги</div></div>
+        <div class="cur-switch" id="curSwitch2"><button data-cur="GEL" class="active">₾</button><button data-cur="RUB">₽</button><button data-cur="USD">$</button></div>
+      </div>
+      <div class="segment">
+        <button data-scope="month" class="active">Этот месяц</button>
+        <button data-scope="months">По месяцам</button>
+      </div>
+      <div id="analyticsBody"></div>
+    </div>
+  </div>
+
+  <div class="navbar" id="navbar" style="display:none">
+    <button class="nav-btn active" data-nav="overview"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg><span>Обзор</span></button>
+    <button class="nav-add" id="navAdd" aria-label="Добавить"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+    <button class="nav-btn" data-nav="analytics"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg><span>Аналитика</span></button>
+  </div>
+
+  <div class="toast" id="toast"><span class="tick"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span><span id="toastText">Готово</span></div>
+  <div class="overlay" id="overlay"></div>
+
+  <!-- Add sheet -->
+  <div class="sheet" id="sheetAdd">
+    <div class="grip"></div>
+    <h2>Новый расход</h2>
+    <div class="sheet-sub">Сумму можно ввести в любой валюте — пересчитаю в лари по курсу выбранного дня.</div>
+    <div class="field">
+      <label>Сумма</label>
+      <div class="amount-input">
+        <input type="number" inputmode="decimal" id="inAmount" placeholder="0">
+        <span class="amount-cur" id="inAmountCur">₾</span>
+        <span class="mini-cur" id="inCurSwitch"><button data-cur="GEL" class="active">₾</button><button data-cur="RUB">₽</button><button data-cur="USD">$</button></span>
+      </div>
+    </div>
+    <div class="field">
+      <label>Когда</label>
+      <div class="toggle3" id="dateToggle"><button data-days="0" class="active">Сегодня</button><button data-days="1">Вчера</button><button data-days="pick">Другой день</button></div>
+      <input type="date" class="txt-input" id="inDate" style="display:none; margin-top:8px">
+    </div>
+    <div class="field"><label>Категория</label><div class="chips" id="catChips"></div></div>
+    <div class="field"><label>Кто потратил</label><div class="toggle2" id="authorToggle"></div></div>
+    <div class="field"><label>Заметка (необязательно)</label><input type="text" class="txt-input" id="inNote" placeholder="например, продукты на выходные"></div>
+    <button class="btn-save" id="btnSave" disabled>Сохранить</button>
+  </div>
+
+  <!-- Settings sheet -->
+  <div class="sheet" id="sheetSettings">
+    <div class="grip"></div>
+    <h2>Настройки</h2>
+    <div class="sheet-sub">Валюта учёта — лари (₾). Бюджет и лимит задаются в лари.</div>
+
+    <div class="field"><label>Бюджет на месяц</label><div class="amount-input"><input type="number" inputmode="decimal" id="inMonthly" placeholder="0"><span class="amount-cur">₾</span></div></div>
+    <div class="field"><label>Лимит на день</label><div class="amount-input"><input type="number" inputmode="decimal" id="inDaily" placeholder="0"><span class="amount-cur">₾</span></div></div>
+    <p style="font-size:13px;color:var(--ink-3);line-height:1.5;margin:-6px 0 8px">Дневной лимит — постоянный ориентир. Он не пересчитывается автоматически и не сбрасывается каждый день.</p>
+
+    <div class="sect-title">Курс на сегодня</div>
+    <p style="font-size:13px;color:var(--ink-3);line-height:1.5;margin:-2px 0 12px">Курс сохраняется на текущую дату. Траты этого дня считаются по нему, а завтра ты задашь новый — прошлые останутся со своим.</p>
+    <div class="field">
+      <label>1 ₾ равен</label>
+      <div class="amount-input" style="margin-bottom:8px"><input type="number" inputmode="decimal" id="inRateRub" placeholder="0"><span class="amount-cur">₽</span></div>
+      <div class="amount-input"><input type="number" inputmode="decimal" id="inRateUsd" placeholder="0"><span class="amount-cur">$</span></div>
+    </div>
+    <button class="btn-ghost" id="btnUpdateRate" style="margin-bottom:16px">Подставить курс из интернета</button>
+    <div id="rateHistoryList"></div>
+
+    <div class="sect-title">Категории</div>
+    <div id="catManageList"></div>
+    <div style="margin-top:14px">
+      <div class="emoji-grid" id="emojiGrid"></div>
+      <div class="cm-add-row">
+        <input type="text" class="txt-input" id="inCatName" placeholder="Название категории">
+        <button class="cm-add-btn" id="btnAddCat">Добавить</button>
+      </div>
+    </div>
+
+    <button class="btn-save" id="btnSaveSettings" style="margin-top:24px">Сохранить</button>
+  </div>
+
+  <!-- Category detail -->
+  <div class="sheet" id="sheetCat">
+    <div class="grip"></div>
+    <h2 id="catDetailTitle">Категория</h2>
+    <div class="sheet-sub" id="catDetailSub"></div>
+    <div id="catDetailBody"></div>
+  </div>
+
+  <script>
+    "use strict";
+    var tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+    if (tg) { try { tg.ready(); tg.expand(); } catch (e) {} }
+    function haptic(t) { try { if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred(t || "light"); } catch (e) {} }
+
+    var EMBEDDED = {
+  "settings": {
+    "baseCurrency": "GEL",
+    "displayCurrency": "GEL",
+    "monthlyBudget": 2500,
+    "dailyLimit": 90,
+    "users": [
+      "Ольга",
+      "Папа"
+    ],
+    "rateHistory": {
+      "2026-03-01": {
+        "RUB": 28.4,
+        "USD": 0.3725
+      },
+      "2026-05-01": {
+        "RUB": 28.95,
+        "USD": 0.376
+      },
+      "2026-06-15": {
+        "RUB": 29.1,
+        "USD": 0.3775
+      },
+      "2026-07-05": {
+        "RUB": 29.33,
+        "USD": 0.3788
+      }
+    }
+  },
+  "categories": [
+    {
+      "id": "food",
+      "name": "Продукты",
+      "icon": "🛒",
+      "builtin": true
+    },
+    {
+      "id": "cafe",
+      "name": "Кафе",
+      "icon": "☕",
+      "builtin": true
+    },
+    {
+      "id": "transport",
+      "name": "Транспорт",
+      "icon": "🚗",
+      "builtin": true
+    },
+    {
+      "id": "home",
+      "name": "Дом",
+      "icon": "🏠",
+      "builtin": true
+    },
+    {
+      "id": "health",
+      "name": "Здоровье",
+      "icon": "💊",
+      "builtin": true
+    },
+    {
+      "id": "fun",
+      "name": "Развлечения",
+      "icon": "🎬",
+      "builtin": true
+    },
+    {
+      "id": "other",
+      "name": "Другое",
+      "icon": "📦",
+      "builtin": true
+    }
+  ],
+  "expenses": [
+    {
+      "amount": 22,
+      "category": "transport",
+      "author": "Папа",
+      "note": "такси Bolt",
+      "daysAgo": 0,
+      "id": 1
+    },
+    {
+      "amount": 34,
+      "category": "food",
+      "author": "Ольга",
+      "note": "Магнити, к ужину",
+      "daysAgo": 0,
+      "id": 2
+    },
+    {
+      "id": 3,
+      "amount": 39,
+      "category": "food",
+      "author": "Ольга",
+      "note": "Спар",
+      "daysAgo": 1
+    },
+    {
+      "id": 4,
+      "amount": 134,
+      "category": "health",
+      "author": "Папа",
+      "note": "массаж",
+      "daysAgo": 1
+    },
+    {
+      "id": 5,
+      "amount": 50,
+      "category": "other",
+      "author": "Ольга",
+      "note": "мелочь",
+      "daysAgo": 2
+    },
+    {
+      "id": 6,
+      "amount": 37,
+      "category": "cafe",
+      "author": "Ольга",
+      "note": "кофе на набережной",
+      "daysAgo": 4
+    },
+    {
+      "id": 7,
+      "amount": 173,
+      "category": "home",
+      "author": "Папа",
+      "note": "коммуналка",
+      "daysAgo": 4
+    },
+    {
+      "id": 8,
+      "amount": 51,
+      "category": "transport",
+      "author": "Ольга",
+      "note": "бензин",
+      "daysAgo": 7
+    },
+    {
+      "id": 9,
+      "amount": 43,
+      "category": "transport",
+      "author": "Папа",
+      "note": "такси Bolt",
+      "daysAgo": 9
+    },
+    {
+      "id": 10,
+      "amount": 62,
+      "category": "other",
+      "author": "Ольга",
+      "note": "мелочь",
+      "daysAgo": 9
+    },
+    {
+      "id": 11,
+      "amount": 12,
+      "category": "cafe",
+      "author": "Папа",
+      "note": "бизнес-ланч",
+      "daysAgo": 12
+    },
+    {
+      "id": 12,
+      "amount": 80,
+      "category": "food",
+      "author": "Ольга",
+      "note": "овощи и фрукты",
+      "daysAgo": 13
+    },
+    {
+      "id": 13,
+      "amount": 11,
+      "category": "transport",
+      "author": "Папа",
+      "note": "такси Bolt",
+      "daysAgo": 13
+    },
+    {
+      "id": 14,
+      "amount": 67,
+      "category": "food",
+      "author": "Папа",
+      "note": "рынок",
+      "daysAgo": 16
+    },
+    {
+      "id": 15,
+      "amount": 17,
+      "category": "transport",
+      "author": "Папа",
+      "note": "такси Bolt",
+      "daysAgo": 16
+    },
+    {
+      "id": 16,
+      "amount": 34,
+      "category": "food",
+      "author": "Папа",
+      "note": "овощи и фрукты",
+      "daysAgo": 17
+    },
+    {
+      "id": 17,
+      "amount": 27,
+      "category": "cafe",
+      "author": "Ольга",
+      "note": "чай с подругой",
+      "daysAgo": 17
+    },
+    {
+      "id": 18,
+      "amount": 27,
+      "category": "cafe",
+      "author": "Ольга",
+      "note": "кофе на набережной",
+      "daysAgo": 17
+    },
+    {
+      "id": 19,
+      "amount": 44,
+      "category": "transport",
+      "author": "Ольга",
+      "note": "парковка",
+      "daysAgo": 17
+    },
+    {
+      "id": 20,
+      "amount": 60,
+      "category": "health",
+      "author": "Ольга",
+      "note": "анализы",
+      "daysAgo": 18
+    },
+    {
+      "id": 21,
+      "amount": 38,
+      "category": "fun",
+      "author": "Папа",
+      "note": "подарок",
+      "daysAgo": 21
+    },
+    {
+      "id": 22,
+      "amount": 37,
+      "category": "food",
+      "author": "Ольга",
+      "note": "мясо и рыба",
+      "daysAgo": 22
+    },
+    {
+      "id": 23,
+      "amount": 59,
+      "category": "food",
+      "author": "Папа",
+      "note": "бытовая химия",
+      "daysAgo": 22
+    },
+    {
+      "id": 24,
+      "amount": 25,
+      "category": "cafe",
+      "author": "Папа",
+      "note": "завтрак",
+      "daysAgo": 22
+    },
+    {
+      "id": 25,
+      "amount": 21,
+      "category": "home",
+      "author": "Папа",
+      "note": "коммуналка",
+      "daysAgo": 22
+    },
+    {
+      "id": 26,
+      "amount": 46,
+      "category": "food",
+      "author": "Ольга",
+      "note": "Спар",
+      "daysAgo": 23
+    },
+    {
+      "id": 27,
+      "amount": 55,
+      "category": "food",
+      "author": "Папа",
+      "note": "Магнити",
+      "daysAgo": 24
+    },
+    {
+      "id": 28,
+      "amount": 139,
+      "category": "home",
+      "author": "Папа",
+      "note": "коммуналка",
+      "daysAgo": 24
+    },
+    {
+      "id": 29,
+      "amount": 79,
+      "category": "home",
+      "author": "Папа",
+      "note": "средства для уборки",
+      "daysAgo": 24
+    },
+    {
+      "id": 30,
+      "amount": 56,
+      "category": "other",
+      "author": "Ольга",
+      "note": "подписки",
+      "daysAgo": 24
+    },
+    {
+      "id": 31,
+      "amount": 51,
+      "category": "food",
+      "author": "Ольга",
+      "note": "Вкусвилл-аналог",
+      "daysAgo": 26
+    },
+    {
+      "id": 32,
+      "amount": 30,
+      "category": "cafe",
+      "author": "Ольга",
+      "note": "бизнес-ланч",
+      "daysAgo": 26
+    },
+    {
+      "id": 33,
+      "amount": 14,
+      "category": "cafe",
+      "author": "Ольга",
+      "note": "десерт",
+      "daysAgo": 27
+    },
+    {
+      "id": 34,
+      "amount": 40,
+      "category": "transport",
+      "author": "Папа",
+      "note": "парковка",
+      "daysAgo": 28
+    },
+    {
+      "id": 35,
+      "amount": 117,
+      "category": "fun",
+      "author": "Ольга",
+      "note": "концерт",
+      "daysAgo": 28
+    },
+    {
+      "id": 36,
+      "amount": 65,
+      "category": "food",
+      "author": "Ольга",
+      "note": "Спар",
+      "daysAgo": 29
+    },
+    {
+      "id": 37,
+      "amount": 107,
+      "category": "health",
+      "author": "Папа",
+      "note": "аптека",
+      "daysAgo": 29
+    },
+    {
+      "id": 38,
+      "amount": 106,
+      "category": "fun",
+      "author": "Ольга",
+      "note": "книги",
+      "daysAgo": 31
+    },
+    {
+      "id": 39,
+      "amount": 51,
+      "category": "food",
+      "author": "Папа",
+      "note": "Спар",
+      "daysAgo": 32
+    },
+    {
+      "id": 40,
+      "amount": 30,
+      "category": "cafe",
+      "author": "Папа",
+      "note": "завтрак",
+      "daysAgo": 34
+    },
+    {
+      "id": 41,
+      "amount": 52,
+      "category": "food",
+      "author": "Ольга",
+      "note": "бытовая химия",
+      "daysAgo": 36
+    },
+    {
+      "id": 42,
+      "amount": 28,
+      "category": "transport",
+      "author": "Ольга",
+      "note": "маршрутка",
+      "daysAgo": 36
+    },
+    {
+      "id": 43,
+      "amount": 99,
+      "category": "fun",
+      "author": "Ольга",
+      "note": "подарок",
+      "daysAgo": 36
+    },
+    {
+      "id": 44,
+      "amount": 84,
+      "category": "food",
+      "author": "Ольга",
+      "note": "Спар",
+      "daysAgo": 37
+    },
+    {
+      "id": 45,
+      "amount": 42,
+      "category": "cafe",
+      "author": "Папа",
+      "note": "завтрак",
+      "daysAgo": 37
+    },
+    {
+      "id": 46,
+      "amount": 68,
+      "category": "food",
+      "author": "Ольга",
+      "note": "Вкусвилл-аналог",
+      "daysAgo": 38
+    },
+    {
+      "id": 47,
+      "amount": 53,
+      "category": "food",
+      "author": "Ольга",
+      "note": "рынок",
+      "daysAgo": 38
+    },
+    {
+      "id": 48,
+      "amount": 37,
+      "category": "cafe",
+      "author": "Папа",
+      "note": "обед вдвоём",
+      "daysAgo": 38
+    },
+    {
+      "id": 49,
+      "amount": 82,
+      "category": "food",
+      "author": "Ольга",
+      "note": "хлеб и выпечка",
+      "daysAgo": 39
+    },
+    {
+      "id": 50,
+      "amount": 30,
+      "category": "transport",
+      "author": "Папа",
+      "note": "такси Bolt",
+      "daysAgo": 39
+    },
+    {
+      "id": 51,
+      "amount": 49,
+      "category": "fun",
+      "author": "Ольга",
+      "note": "концерт",
+      "daysAgo": 39
+    },
+    {
+      "id": 52,
+      "amount": 72,
+      "category": "home",
+      "author": "Папа",
+      "note": "лампочки и провода",
+      "daysAgo": 40
+    },
+    {
+      "id": 53,
+      "amount": 91,
+      "category": "food",
+      "author": "Папа",
+      "note": "рынок",
+      "daysAgo": 41
+    },
+    {
+      "id": 54,
+      "amount": 71,
+      "category": "home",
+      "author": "Ольга",
+      "note": "коммуналка",
+      "daysAgo": 41
+    },
+    {
+      "id": 55,
+      "amount": 15,
+      "category": "transport",
+      "author": "Папа",
+      "note": "такси Bolt",
+      "daysAgo": 42
+    },
+    {
+      "id": 56,
+      "amount": 89,
+      "category": "food",
+      "author": "Папа",
+      "note": "бытовая химия",
+      "daysAgo": 43
+    },
+    {
+      "id": 57,
+      "amount": 24,
+      "category": "food",
+      "author": "Ольга",
+      "note": "бытовая химия",
+      "daysAgo": 45
+    },
+    {
+      "id": 58,
+      "amount": 69,
+      "category": "food",
+      "author": "Папа",
+      "note": "молочка",
+      "daysAgo": 47
+    },
+    {
+      "id": 59,
+      "amount": 20,
+      "category": "health",
+      "author": "Папа",
+      "note": "анализы",
+      "daysAgo": 47
+    },
+    {
+      "id": 60,
+      "amount": 32,
+      "category": "transport",
+      "author": "Ольга",
+      "note": "бензин",
+      "daysAgo": 48
+    },
+    {
+      "id": 61,
+      "amount": 18,
+      "category": "transport",
+      "author": "Папа",
+      "note": "бензин",
+      "daysAgo": 49
+    },
+    {
+      "id": 62,
+      "amount": 50,
+      "category": "food",
+      "author": "Ольга",
+      "note": "Магнити",
+      "daysAgo": 53
+    },
+    {
+      "id": 63,
+      "amount": 76,
+      "category": "other",
+      "author": "Ольга",
+      "note": "непредвиденное",
+      "daysAgo": 53
+    },
+    {
+      "id": 64,
+      "amount": 101,
+      "category": "home",
+      "author": "Ольга",
+      "note": "коммуналка",
+      "daysAgo": 55
+    },
+    {
+      "id": 65,
+      "amount": 41,
+      "category": "cafe",
+      "author": "Ольга",
+      "note": "завтрак",
+      "daysAgo": 56
+    },
+    {
+      "id": 66,
+      "amount": 13,
+      "category": "cafe",
+      "author": "Ольга",
+      "note": "завтрак",
+      "daysAgo": 57
+    },
+    {
+      "id": 67,
+      "amount": 118,
+      "category": "fun",
+      "author": "Папа",
+      "note": "книги",
+      "daysAgo": 57
+    },
+    {
+      "id": 68,
+      "amount": 40,
+      "category": "cafe",
+      "author": "Папа",
+      "note": "завтрак",
+      "daysAgo": 58
+    },
+    {
+      "id": 69,
+      "amount": 55,
+      "category": "other",
+      "author": "Ольга",
+      "note": "одежда",
+      "daysAgo": 58
+    },
+    {
+      "id": 70,
+      "amount": 36,
+      "category": "cafe",
+      "author": "Ольга",
+      "note": "завтрак",
+      "daysAgo": 60
+    },
+    {
+      "id": 71,
+      "amount": 38,
+      "category": "transport",
+      "author": "Ольга",
+      "note": "бензин",
+      "daysAgo": 60
+    },
+    {
+      "id": 72,
+      "amount": 12,
+      "category": "cafe",
+      "author": "Папа",
+      "note": "бизнес-ланч",
+      "daysAgo": 63
+    },
+    {
+      "id": 73,
+      "amount": 136,
+      "category": "health",
+      "author": "Папа",
+      "note": "стоматолог",
+      "daysAgo": 64
+    },
+    {
+      "id": 74,
+      "amount": 87,
+      "category": "food",
+      "author": "Ольга",
+      "note": "Спар",
+      "daysAgo": 66
+    },
+    {
+      "id": 75,
+      "amount": 3,
+      "category": "transport",
+      "author": "Ольга",
+      "note": "маршрутка",
+      "daysAgo": 66
+    },
+    {
+      "id": 76,
+      "amount": 30,
+      "category": "food",
+      "author": "Папа",
+      "note": "рынок",
+      "daysAgo": 67
+    },
+    {
+      "id": 77,
+      "amount": 43,
+      "category": "transport",
+      "author": "Папа",
+      "note": "парковка",
+      "daysAgo": 67
+    },
+    {
+      "id": 78,
+      "amount": 94,
+      "category": "food",
+      "author": "Ольга",
+      "note": "рынок",
+      "daysAgo": 68
+    },
+    {
+      "id": 79,
+      "amount": 178,
+      "category": "home",
+      "author": "Ольга",
+      "note": "коммуналка",
+      "daysAgo": 68
+    },
+    {
+      "id": 80,
+      "amount": 32,
+      "category": "cafe",
+      "author": "Ольга",
+      "note": "кофе на набережной",
+      "daysAgo": 69
+    },
+    {
+      "id": 81,
+      "amount": 55,
+      "category": "food",
+      "author": "Ольга",
+      "note": "мясо и рыба",
+      "daysAgo": 72
+    },
+    {
+      "id": 82,
+      "amount": 28,
+      "category": "cafe",
+      "author": "Ольга",
+      "note": "десерт",
+      "daysAgo": 73
+    },
+    {
+      "id": 83,
+      "amount": 35,
+      "category": "other",
+      "author": "Папа",
+      "note": "одежда",
+      "daysAgo": 73
+    },
+    {
+      "id": 84,
+      "amount": 28,
+      "category": "cafe",
+      "author": "Папа",
+      "note": "завтрак",
+      "daysAgo": 76
+    },
+    {
+      "id": 85,
+      "amount": 30,
+      "category": "health",
+      "author": "Ольга",
+      "note": "стоматолог",
+      "daysAgo": 76
+    },
+    {
+      "id": 86,
+      "amount": 36,
+      "category": "home",
+      "author": "Папа",
+      "note": "коммуналка",
+      "daysAgo": 78
+    },
+    {
+      "id": 87,
+      "amount": 34,
+      "category": "transport",
+      "author": "Ольга",
+      "note": "маршрутка",
+      "daysAgo": 81
+    },
+    {
+      "id": 88,
+      "amount": 49,
+      "category": "food",
+      "author": "Папа",
+      "note": "хлеб и выпечка",
+      "daysAgo": 82
+    },
+    {
+      "id": 89,
+      "amount": 48,
+      "category": "transport",
+      "author": "Ольга",
+      "note": "парковка",
+      "daysAgo": 82
+    },
+    {
+      "id": 90,
+      "amount": 24,
+      "category": "home",
+      "author": "Ольга",
+      "note": "бытовая мелочь",
+      "daysAgo": 82
+    },
+    {
+      "id": 91,
+      "amount": 32,
+      "category": "food",
+      "author": "Папа",
+      "note": "мясо и рыба",
+      "daysAgo": 84
+    },
+    {
+      "id": 92,
+      "amount": 94,
+      "category": "food",
+      "author": "Ольга",
+      "note": "Спар",
+      "daysAgo": 84
+    },
+    {
+      "id": 93,
+      "amount": 19,
+      "category": "transport",
+      "author": "Папа",
+      "note": "такси Bolt",
+      "daysAgo": 85
+    },
+    {
+      "id": 94,
+      "amount": 60,
+      "category": "food",
+      "author": "Папа",
+      "note": "молочка",
+      "daysAgo": 86
+    },
+    {
+      "id": 95,
+      "amount": 29,
+      "category": "cafe",
+      "author": "Ольга",
+      "note": "чай с подругой",
+      "daysAgo": 86
+    },
+    {
+      "id": 96,
+      "amount": 83,
+      "category": "health",
+      "author": "Папа",
+      "note": "аптека",
+      "daysAgo": 86
+    },
+    {
+      "id": 97,
+      "amount": 24,
+      "category": "transport",
+      "author": "Папа",
+      "note": "такси Bolt",
+      "daysAgo": 87
+    },
+    {
+      "id": 98,
+      "amount": 57,
+      "category": "other",
+      "author": "Ольга",
+      "note": "подписки",
+      "daysAgo": 88
+    },
+    {
+      "id": 99,
+      "amount": 96,
+      "category": "fun",
+      "author": "Ольга",
+      "note": "прогулка и мороженое",
+      "daysAgo": 89
+    },
+    {
+      "id": 100,
+      "amount": 29,
+      "category": "cafe",
+      "author": "Ольга",
+      "note": "десерт",
+      "daysAgo": 91
+    },
+    {
+      "id": 101,
+      "amount": 16,
+      "category": "cafe",
+      "author": "Ольга",
+      "note": "чай с подругой",
+      "daysAgo": 93
+    },
+    {
+      "id": 102,
+      "amount": 77,
+      "category": "fun",
+      "author": "Ольга",
+      "note": "кино",
+      "daysAgo": 93
+    },
+    {
+      "id": 103,
+      "amount": 55,
+      "category": "food",
+      "author": "Папа",
+      "note": "рынок",
+      "daysAgo": 94
+    },
+    {
+      "id": 104,
+      "amount": 31,
+      "category": "food",
+      "author": "Папа",
+      "note": "Магнити",
+      "daysAgo": 94
+    },
+    {
+      "id": 105,
+      "amount": 55,
+      "category": "fun",
+      "author": "Ольга",
+      "note": "ресторан",
+      "daysAgo": 94
+    },
+    {
+      "id": 106,
+      "amount": 18,
+      "category": "cafe",
+      "author": "Ольга",
+      "note": "обед вдвоём",
+      "daysAgo": 95
+    },
+    {
+      "id": 107,
+      "amount": 82,
+      "category": "food",
+      "author": "Ольга",
+      "note": "рынок",
+      "daysAgo": 96
+    },
+    {
+      "id": 108,
+      "amount": 17,
+      "category": "cafe",
+      "author": "Ольга",
+      "note": "обед вдвоём",
+      "daysAgo": 96
+    },
+    {
+      "id": 109,
+      "amount": 45,
+      "category": "home",
+      "author": "Ольга",
+      "note": "интернет",
+      "daysAgo": 96
+    },
+    {
+      "id": 110,
+      "amount": 25,
+      "category": "food",
+      "author": "Папа",
+      "note": "рынок",
+      "daysAgo": 99
+    },
+    {
+      "id": 111,
+      "amount": 57,
+      "category": "food",
+      "author": "Папа",
+      "note": "Спар",
+      "daysAgo": 101
+    },
+    {
+      "id": 112,
+      "amount": 42,
+      "category": "cafe",
+      "author": "Папа",
+      "note": "хачапури",
+      "daysAgo": 101
+    },
+    {
+      "id": 113,
+      "amount": 130,
+      "category": "health",
+      "author": "Папа",
+      "note": "аптека",
+      "daysAgo": 101
+    },
+    {
+      "id": 114,
+      "amount": 41,
+      "category": "transport",
+      "author": "Ольга",
+      "note": "мойка машины",
+      "daysAgo": 102
+    },
+    {
+      "id": 115,
+      "amount": 39,
+      "category": "transport",
+      "author": "Папа",
+      "note": "такси Bolt",
+      "daysAgo": 102
+    },
+    {
+      "id": 116,
+      "amount": 66,
+      "category": "food",
+      "author": "Ольга",
+      "note": "Вкусвилл-аналог",
+      "daysAgo": 103
+    },
+    {
+      "id": 117,
+      "amount": 26,
+      "category": "cafe",
+      "author": "Ольга",
+      "note": "кофе на набережной",
+      "daysAgo": 105
+    },
+    {
+      "id": 118,
+      "amount": 30,
+      "category": "transport",
+      "author": "Папа",
+      "note": "маршрутка",
+      "daysAgo": 105
+    },
+    {
+      "id": 119,
+      "amount": 65,
+      "category": "fun",
+      "author": "Ольга",
+      "note": "подарок",
+      "daysAgo": 105
+    },
+    {
+      "id": 120,
+      "amount": 53,
+      "category": "other",
+      "author": "Папа",
+      "note": "непредвиденное",
+      "daysAgo": 107
+    }
+  ]
+};
+
+    var DATA = null;
+    var period = "month";
+    var scope = "month";
+    var displayCur = "GEL";
+    var inputCur = "GEL";
+    var weekOffset = 0;
+    var newCatEmoji = "🛒";
+    var draft = { category: null, author: null, daysAgo: 0 };
+    var CUR_SYM = { GEL: "₾", RUB: "₽", USD: "$" };
+    var MONTHS = ["янв","фев","мар","апр","май","июн","июл","авг","сен","окт","ноя","дек"];
+    var WD = ["Пн","Вт","Ср","Чт","Пт","Сб","Вс"];
+    var EMOJI = ["🛒","☕","🚗","🏠","💊","🎬","📦","🍔","🎁","👕","✈️","📚","💻","🐾","💄","⚽","🎵","🌷","🧾","🔧","🍷","🎓","💅","🚿"];
+
+    var $ = function (id) { return document.getElementById(id); };
+
+    function pad(n){ return String(n).padStart(2,"0"); }
+    function ymd(d){ return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()); }
+    function dateOf(daysAgo){ var d=new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()-daysAgo); return d; }
+    function ymOf(daysAgo){ var d=dateOf(daysAgo); return d.getFullYear()+"-"+pad(d.getMonth()+1); }
+    function todayYmd(){ return ymd(dateOf(0)); }
+
+    // курс на дату: точный или ближайший предыдущий, иначе самый ранний
+    function rateForYmd(s, cur){
+      if (cur==="GEL") return 1;
+      var h=DATA.settings.rateHistory, keys=Object.keys(h).sort(), pick=null;
+      for (var i=0;i<keys.length;i++){ if (keys[i]<=s) pick=keys[i]; }
+      if (pick===null) pick=keys[0];
+      return (h[pick] && h[pick][cur]) || 1;
+    }
+    function fmtCur(v, cur){ var r=Math.round(v), s=r.toLocaleString("ru-RU"); return cur==="USD"?"$"+s:s+" "+CUR_SYM[cur]; }
+    // одна трата в валюте по курсу её дня
+    function expInCur(e, cur){ return cur==="GEL"?e.amount:e.amount*rateForYmd(ymd(dateOf(e.daysAgo)),cur); }
+    function sumInCur(list, cur){ return list.reduce(function(a,e){ return a+expInCur(e,cur); },0); }
+    // сумма в лари по сегодняшнему курсу (бюджет, лимит, остаток)
+    function convToday(gel, cur){ return cur==="GEL"?gel:gel*rateForYmd(todayYmd(),cur); }
+    function sumGel(list){ return list.reduce(function(a,e){ return a+e.amount; },0); }
+
+    function moneyList(list){ return fmtCur(sumInCur(list,displayCur),displayCur); }
+    function moneyExp(e){ return fmtCur(expInCur(e,displayCur),displayCur); }
+    function moneyToday(gel){ return fmtCur(convToday(gel,displayCur),displayCur); }
+
+    function catById(id){ return DATA.categories.find(function(c){ return c.id===id; }); }
+    function dayLabel(daysAgo){ if(daysAgo===0)return "Сегодня"; if(daysAgo===1)return "Вчера"; var d=dateOf(daysAgo); return d.getDate()+" "+MONTHS[d.getMonth()]; }
+
+    fetch("data.json", { cache: "no-store" })
+      .then(function(r){ if(!r.ok) throw new Error(); return r.json(); })
+      .then(function(j){ DATA=j; boot(); })
+      .catch(function(){ DATA=JSON.parse(JSON.stringify(EMBEDDED)); boot(); });
+
+    function boot(){
+      $("loading").style.display="none"; $("app").style.display="block"; $("navbar").style.display="flex";
+      buildChips(); buildAuthorToggle(); buildEmojiGrid(); bindEvents();
+      renderAll();
+    }
+    function renderAll(){ renderOverview(); if ($("screen-analytics").classList.contains("active")) renderAnalytics(); }
+
+    function inOverviewPeriod(e){ if(period==="week") return e.daysAgo>=0&&e.daysAgo<=6; return e.daysAgo>=0&&e.daysAgo<30; }
+    function inCurrentMonth(e){ return ymOf(e.daysAgo)===ymOf(0); }
+
+    // ---------- OVERVIEW ----------
+    function renderOverview(){
+      var s=DATA.settings;
+      $("rateHint").textContent = "1 ₾ = "+fmtCur(rateForYmd(todayYmd(),"RUB"),"RUB")+" · сегодня";
+
+      var pe=DATA.expenses.filter(inOverviewPeriod);
+      var spentGel=sumGel(pe);
+      var planGel=period==="month"?s.monthlyBudget:s.dailyLimit*7;
+      var pct=planGel>0?Math.min(100,Math.round(spentGel/planGel*100)):0;
+      var rawPct=planGel>0?Math.round(spentGel/planGel*100):0;
+      var leftGel=planGel-spentGel;
+
+      $("heroLabel").textContent = period==="month"?"Потрачено за месяц":"Потрачено за неделю";
+      $("heroAmount").textContent = moneyList(pe);
+      $("heroAlt").textContent = displayCur==="GEL"
+        ? "≈ "+fmtCur(sumInCur(pe,"RUB"),"RUB")+" · "+fmtCur(sumInCur(pe,"USD"),"USD")
+        : "в лари: "+fmtCur(spentGel,"GEL");
+      $("heroPlan").textContent = "из "+moneyToday(planGel);
+      $("heroPct").textContent = rawPct+"%";
+      $("heroBar").style.width = pct+"%";
+      $("heroFootLeft").innerHTML = leftGel<0 ? 'Перерасход <b class="over">'+moneyToday(Math.abs(leftGel))+"</b>" : "Осталось <b>"+moneyToday(leftGel)+"</b>";
+      $("heroFootRight").textContent = period==="month" ? "Бюджет "+moneyToday(s.monthlyBudget) : "Ориентир "+moneyToday(s.dailyLimit)+"/день";
+
+      var todayList=DATA.expenses.filter(function(e){return e.daysAgo===0;});
+      var todayGel=sumGel(todayList);
+      var dLeftGel=s.dailyLimit-todayGel, dOver=dLeftGel<0;
+      var dPct=s.dailyLimit>0?Math.min(100,Math.round(todayGel/s.dailyLimit*100)):0;
+      $("dayN").textContent=moneyList(todayList);
+      $("dayOf").textContent="из "+moneyToday(s.dailyLimit);
+      $("dayLeftLbl").textContent=dOver?"перерасход":"осталось";
+      $("dayLeftVal").textContent=moneyToday(Math.abs(dLeftGel));
+      $("dayLeftVal").className="val"+(dOver?" over":"");
+      $("dayBar").style.width=dPct+"%"; $("dayBar").className=dOver?"over":"";
+
+      renderWeekChart();
+    }
+
+    // ---------- WEEK CHART (swipeable) ----------
+    function mondayOf(offset){
+      var t=dateOf(0), dow=t.getDay(), fromMon=(dow+6)%7;
+      var m=new Date(t); m.setDate(t.getDate()-fromMon-offset*7); m.setHours(0,0,0,0); return m;
+    }
+    function maxWeekOffset(){
+      if(!DATA.expenses.length) return 0;
+      var maxAgo=Math.max.apply(null,DATA.expenses.map(function(e){return e.daysAgo;}));
+      return Math.floor(maxAgo/7)+1;
+    }
+    function renderWeekChart(){
+      var mon=mondayOf(weekOffset);
+      var days=[];
+      for(var i=0;i<7;i++){ var d=new Date(mon); d.setDate(mon.getDate()+i); days.push(d); }
+      var tYmd=todayYmd();
+      // сумма по каждому дню (в выбранной валюте)
+      var dayData=days.map(function(d){
+        var key=ymd(d);
+        var list=DATA.expenses.filter(function(e){ return ymd(dateOf(e.daysAgo))===key; });
+        return { d:d, key:key, val:sumInCur(list,displayCur), gel:sumGel(list), isToday:key===tYmd, future:key>tYmd };
+      });
+      var max=Math.max.apply(null,dayData.map(function(x){return x.val;}).concat([1]));
+      $("wkChart").innerHTML=dayData.map(function(x,i){
+        var h=x.future?0:Math.max(3,Math.round(x.val/max*100));
+        var valLbl=x.val>0?fmtCur(x.val,displayCur).replace(/\s?[₾₽]|^\$/,"").trim():"";
+        return '<div class="wk-col '+(x.isToday?"today":"")+'" style="'+(x.future?"opacity:.35":"")+'">'+
+          '<div class="wk-val">'+valLbl+'</div>'+
+          '<div class="wk-track"><div class="wk-fill" style="height:'+h+'%"></div></div>'+
+          '<div class="wk-day">'+WD[i]+'</div><div class="wk-num">'+x.d.getDate()+'</div></div>';
+      }).join("");
+
+      var sun=days[6];
+      var range = mon.getMonth()===sun.getMonth()
+        ? mon.getDate()+"–"+sun.getDate()+" "+MONTHS[sun.getMonth()]
+        : mon.getDate()+" "+MONTHS[mon.getMonth()]+" — "+sun.getDate()+" "+MONTHS[sun.getMonth()];
+      $("wkRange").textContent = weekOffset===0 ? "Эта неделя" : range;
+
+      var weekList=DATA.expenses.filter(function(e){ var k=ymd(dateOf(e.daysAgo)); return k>=ymd(mon)&&k<=ymd(sun); });
+      var wsum=sumInCur(weekList,displayCur);
+      var daysElapsed=weekOffset===0?((dateOf(0)-mon)/86400000+1):7;
+      $("wkTotal").textContent=fmtCur(wsum,displayCur);
+      $("wkAvg").textContent=fmtCur(wsum/Math.max(1,daysElapsed),displayCur);
+
+      $("wkNext").disabled = weekOffset<=0;
+      $("wkPrev").disabled = weekOffset>=maxWeekOffset();
+    }
+    function shiftWeek(delta){
+      var nw=weekOffset+delta;
+      if(nw<0) nw=0; if(nw>maxWeekOffset()) nw=maxWeekOffset();
+      if(nw!==weekOffset){ weekOffset=nw; haptic(); renderWeekChart(); }
+    }
+
+    // ---------- categories aggregate ----------
+    function aggregateByCat(list){
+      var map={};
+      list.forEach(function(e){ map[e.category]=(map[e.category]||0)+e.amount; });
+      return Object.keys(map).map(function(id){ return { cat:catById(id), gel:map[id], list:list.filter(function(e){return e.category===id;}) }; })
+        .filter(function(r){ return r.cat; }).sort(function(a,b){ return b.gel-a.gel; });
+    }
+
+    // ---------- CATEGORY DETAIL ----------
+    function openCatDetail(catId){
+      var c=catById(catId);
+      var pe=DATA.expenses.filter(inOverviewPeriod).filter(function(e){return e.category===catId;});
+      $("catDetailTitle").textContent=c.icon+"  "+c.name;
+      $("catDetailSub").textContent=moneyList(pe)+" · "+(period==="month"?"за месяц":"за неделю")+" · "+pe.length+" трат";
+      var byDay={};
+      pe.forEach(function(e){ (byDay[e.daysAgo]=byDay[e.daysAgo]||[]).push(e); });
+      var daysK=Object.keys(byDay).map(Number).sort(function(a,b){return a-b;});
+      var body=$("catDetailBody");
+      if(!daysK.length){ body.innerHTML='<div class="empty">В этой категории пока пусто.</div>'; }
+      else {
+        body.innerHTML=daysK.map(function(dk){
+          var items=byDay[dk], dTot=sumInCur(items,displayCur);
+          return '<div class="day-group"><div class="day-head"><span class="day-date">'+dayLabel(dk)+'</span><span class="day-total">'+fmtCur(dTot,displayCur)+'</span></div>'+
+            items.map(function(e){
+              return '<div class="exp-row"><div class="exp-body"><div class="exp-note">'+(e.note||c.name)+'</div><div class="exp-author">'+e.author+'</div></div>'+
+                '<div class="exp-sum">'+moneyExp(e)+'</div>'+
+                '<button class="exp-del" data-id="'+e.id+'" aria-label="Удалить"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>';
+            }).join("")+'</div>';
+        }).join("");
+        body.querySelectorAll(".exp-del").forEach(function(btn){
+          btn.addEventListener("click", function(){
+            var id=parseInt(btn.getAttribute("data-id"),10);
+            DATA.expenses=DATA.expenses.filter(function(e){return e.id!==id;});
+            haptic("medium"); renderAll();
+            var still=DATA.expenses.filter(inOverviewPeriod).filter(function(e){return e.category===catId;});
+            if(still.length) openCatDetail(catId); else closeSheets();
+            showToast("Расход удалён");
+          });
+        });
+      }
+      openSheet($("sheetCat"));
+    }
+
+    // ---------- ANALYTICS ----------
+    function switchScreen(name){
+      $("screen-overview").classList.toggle("active",name==="overview");
+      $("screen-analytics").classList.toggle("active",name==="analytics");
+      document.querySelectorAll(".nav-btn").forEach(function(b){ b.classList.toggle("active",b.getAttribute("data-nav")===name); });
+      if(name==="analytics") renderAnalytics();
+      window.scrollTo(0,0);
+    }
+    function monthsData(){
+      var res={};
+      DATA.expenses.forEach(function(e){ var k=ymOf(e.daysAgo); (res[k]=res[k]||[]).push(e); });
+      var keys=Object.keys(res).sort().slice(-6);
+      return keys.map(function(k){
+        var mi=parseInt(k.split("-")[1],10)-1;
+        return { key:k, label:MONTHS[mi], gel:sumGel(res[k]), cur:sumInCur(res[k],displayCur), current:k===ymOf(0) };
+      });
+    }
+    function renderAnalytics(){
+      syncCurSwitches();
+      var s=DATA.settings, body=$("analyticsBody");
+      if(scope==="months"){
+        var md=monthsData();
+        var max=Math.max.apply(null,md.map(function(m){return m.gel;}).concat([1]));
+        var avgCur=md.length?md.reduce(function(a,m){return a+m.cur;},0)/md.length:0;
+        var full=md.filter(function(m){return !m.current;});
+        var maxMonth=full.slice().sort(function(a,b){return b.gel-a.gel;})[0];
+        var bars=md.map(function(m){
+          var h=Math.round(m.gel/max*100);
+          return '<div class="bar-col '+(m.current?"current":"")+'"><div class="bar-val">'+fmtCur(m.cur,displayCur)+'</div>'+
+            '<div class="bar-track"><div class="bar-fill" style="height:'+h+'%"></div></div>'+
+            '<div class="bar-lbl">'+m.label+(m.current?" •":"")+'</div></div>';
+        }).join("");
+        body.innerHTML=
+          '<div class="card"><div class="card-head"><h2>Расходы по месяцам</h2><span class="sub">в '+CUR_SYM[displayCur]+'</span></div><div class="chart">'+bars+'</div></div>'+
+          '<div class="card"><div class="stat-grid">'+
+            '<div class="stat"><div class="lbl">В среднем за месяц</div><div class="val">'+fmtCur(avgCur,displayCur)+'</div></div>'+
+            '<div class="stat"><div class="lbl">Самый дорогой</div><div class="val">'+(maxMonth?fmtCur(maxMonth.cur,displayCur)+' <small>'+maxMonth.label+'</small>':"—")+'</div></div>'+
+          '</div></div>'+
+          whoCard(DATA.expenses)+topCard(DATA.expenses,"за всё время");
+      } else {
+        var cm=DATA.expenses.filter(inCurrentMonth);
+        var spentCur=sumInCur(cm,displayCur);
+        var now=new Date(), daysPassed=now.getDate(), daysInMonth=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
+        var perDay=daysPassed?spentCur/daysPassed:0, projected=perDay*daysInMonth;
+        var prevKey=(function(){ var d=new Date(now.getFullYear(),now.getMonth()-1,1); return d.getFullYear()+"-"+pad(d.getMonth()+1); })();
+        var prevGel=sumGel(DATA.expenses.filter(function(e){return ymOf(e.daysAgo)===prevKey;}));
+        var curGel=sumGel(cm);
+        var diffPct=prevGel>0?Math.round((curGel-prevGel)/prevGel*100):null;
+        var projOverCur=convToday(s.monthlyBudget,displayCur);
+        var trendHtml = diffPct===null ? '<span class="sub">нет данных за прошлый месяц</span>'
+          : (diffPct>=0?'<span class="trend-up">▲ на '+diffPct+'% больше</span>':'<span class="trend-down">▼ на '+Math.abs(diffPct)+'% меньше</span>')+' <span class="sub">чем за прошлый месяц к этому дню</span>';
+        body.innerHTML=
+          '<div class="card"><div class="card-head"><h2>'+MONTHS[now.getMonth()]+', итог месяца</h2><span class="sub">'+daysPassed+' из '+daysInMonth+' дн.</span></div><div class="stat-grid">'+
+            '<div class="stat"><div class="lbl">Потрачено</div><div class="val">'+fmtCur(spentCur,displayCur)+'</div></div>'+
+            '<div class="stat"><div class="lbl">В среднем в день</div><div class="val">'+fmtCur(perDay,displayCur)+'</div></div>'+
+            '<div class="stat"><div class="lbl">Прогноз к концу месяца</div><div class="val" '+(projected>projOverCur?'style="color:var(--danger)"':"")+'>'+fmtCur(projected,displayCur)+'</div></div>'+
+            '<div class="stat"><div class="lbl">Бюджет месяца</div><div class="val">'+moneyToday(s.monthlyBudget)+'</div></div>'+
+          '</div><div style="margin-top:14px;font-size:13px;line-height:1.5">'+trendHtml+'</div></div>'+
+          '<div class="card"><div class="card-head"><h2>По категориям</h2><span class="sub">за месяц</span></div>'+catMiniList(cm)+'</div>'+
+          whoCard(cm)+topCard(cm,"в этом месяце");
+      }
+      body.querySelectorAll(".cat").forEach(function(el){ el.addEventListener("click",function(){ openCatDetailMonth(el.getAttribute("data-cat")); }); });
+    }
+    function openCatDetailMonth(catId){
+      var prev=period; period="month";
+      openCatDetail(catId); period=prev;
+    }
+    function catMiniList(list){
+      var rows=aggregateByCat(list), totalGel=sumGel(list);
+      if(!rows.length) return '<div class="empty">Трат пока нет.</div>';
+      return rows.map(function(r){
+        var pct=totalGel>0?Math.round(r.gel/totalGel*100):0;
+        return '<div class="cat" data-cat="'+r.cat.id+'"><div class="cat-ico">'+r.cat.icon+'</div>'+
+          '<div class="cat-body"><div class="cat-top"><span class="cat-name">'+r.cat.name+'</span>'+
+          '<span><span class="cat-sum">'+moneyList(r.list)+'</span><span class="cat-pct">'+pct+'%</span></span></div>'+
+          '<div class="cat-bar"><span style="width:'+pct+'%"></span></div></div>'+
+          '<svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></div>';
+      }).join("");
+    }
+    function whoCard(list){
+      var s=DATA.settings, totalGel=sumGel(list);
+      var colors={0:"linear-gradient(90deg,#2f6bff,#5b8bff)",1:"linear-gradient(90deg,#7a6cff,#9d92ff)"};
+      var rows=s.users.map(function(u,i){
+        var ul=list.filter(function(e){return e.author===u;});
+        var pct=totalGel>0?Math.round(sumGel(ul)/totalGel*100):0;
+        return '<div class="who"><div class="who-top"><span class="who-name">'+u+'</span><span><span class="who-sum">'+moneyList(ul)+'</span><span class="who-pct">'+pct+'%</span></span></div>'+
+          '<div class="who-bar"><span style="width:'+pct+'%;background:'+colors[i]+'"></span></div></div>';
+      }).join("");
+      return '<div class="card"><div class="card-head"><h2>Кто потратил</h2></div>'+rows+'</div>';
+    }
+    function topCard(list, subLabel){
+      var top=list.slice().sort(function(a,b){return b.amount-a.amount;}).slice(0,5);
+      if(!top.length) return "";
+      var rows=top.map(function(e,i){
+        var c=catById(e.category);
+        return '<div class="top-item"><div class="top-rank">'+(i+1)+'</div><div class="top-body"><div class="top-note">'+(e.note||c.name)+'</div>'+
+          '<div class="top-meta">'+c.icon+" "+c.name+" · "+e.author+" · "+dayLabel(e.daysAgo)+'</div></div><div class="top-sum">'+moneyExp(e)+'</div></div>';
+      }).join("");
+      return '<div class="card"><div class="card-head"><h2>Крупнейшие траты</h2><span class="sub">'+subLabel+'</span></div>'+rows+'</div>';
+    }
+
+    // ---------- ADD form ----------
+    function buildChips(){
+      $("catChips").innerHTML=DATA.categories.map(function(c){ return '<button class="chip" data-cat="'+c.id+'"><span class="e">'+c.icon+'</span>'+c.name+'</button>'; }).join("");
+      $("catChips").querySelectorAll(".chip").forEach(function(btn){
+        btn.addEventListener("click",function(){
+          $("catChips").querySelectorAll(".chip").forEach(function(b){b.classList.remove("active");});
+          btn.classList.add("active"); draft.category=btn.getAttribute("data-cat"); haptic(); validate();
+        });
+      });
+    }
+    function buildAuthorToggle(){
+      $("authorToggle").innerHTML=DATA.settings.users.map(function(u){ return '<button data-user="'+u+'">'+u+'</button>'; }).join("");
+      $("authorToggle").querySelectorAll("button").forEach(function(btn){
+        btn.addEventListener("click",function(){
+          $("authorToggle").querySelectorAll("button").forEach(function(b){b.classList.remove("active");});
+          btn.classList.add("active"); draft.author=btn.getAttribute("data-user"); haptic(); validate();
+        });
+      });
+    }
+    function validate(){ $("btnSave").disabled=!(parseFloat($("inAmount").value)>0 && draft.category && draft.author); }
+
+    function openSheet(el){ $("overlay").classList.add("show"); el.classList.add("show"); }
+    function closeSheets(){ $("overlay").classList.remove("show"); ["sheetAdd","sheetSettings","sheetCat"].forEach(function(id){ $(id).classList.remove("show"); }); }
+
+    function openAdd(){
+      $("inAmount").value=""; $("inNote").value="";
+      inputCur="GEL"; $("inAmountCur").textContent="₾";
+      $("inCurSwitch").querySelectorAll("button").forEach(function(b,i){ b.classList.toggle("active",i===0); });
+      draft={ category:null, author:DATA.settings.users[0], daysAgo:0 };
+      $("catChips").querySelectorAll(".chip").forEach(function(b){b.classList.remove("active");});
+      $("authorToggle").querySelectorAll("button").forEach(function(b,i){ b.classList.toggle("active",i===0); });
+      $("dateToggle").querySelectorAll("button").forEach(function(b,i){ b.classList.toggle("active",i===0); });
+      $("inDate").style.display="none";
+      validate(); openSheet($("sheetAdd"));
+      setTimeout(function(){ $("inAmount").focus(); },320);
+    }
+    function saveExpense(){
+      var raw=parseFloat($("inAmount").value);
+      if(!(raw>0)||!draft.category||!draft.author) return;
+      // конвертируем введённую валюту в лари по курсу ДНЯ траты
+      var day=ymd(dateOf(draft.daysAgo));
+      var gel=inputCur==="GEL"?raw:raw/rateForYmd(day,inputCur);
+      var nextId=DATA.expenses.reduce(function(m,e){return Math.max(m,e.id);},0)+1;
+      DATA.expenses.push({ id:nextId, amount:Math.round(gel), category:draft.category, author:draft.author, note:$("inNote").value.trim(), daysAgo:draft.daysAgo });
+      haptic("medium");
+      if(tg&&tg.HapticFeedback){ try{tg.HapticFeedback.notificationOccurred("success");}catch(e){} }
+      closeSheets(); renderAll();
+      showToast(fmtCur(gel,"GEL")+" · "+catById(draft.category).name);
+    }
+
+    // ---------- SETTINGS ----------
+    function openSettings(){
+      var s=DATA.settings;
+      $("inMonthly").value=s.monthlyBudget; $("inDaily").value=s.dailyLimit;
+      $("inRateRub").value=rateForYmd(todayYmd(),"RUB"); $("inRateUsd").value=rateForYmd(todayYmd(),"USD");
+      renderRateHistory(); renderCatManage();
+      openSheet($("sheetSettings"));
+    }
+    function renderRateHistory(){
+      var h=DATA.settings.rateHistory, keys=Object.keys(h).sort().reverse().slice(0,5), t=todayYmd();
+      $("rateHistoryList").innerHTML=keys.map(function(k){
+        var parts=k.split("-");
+        var label=parseInt(parts[2],10)+" "+MONTHS[parseInt(parts[1],10)-1]+" "+parts[0];
+        return '<div class="rh-item'+(k===t?" is-today":"")+'"><span class="rh-date">'+label+(k===t?" · сегодня":"")+'</span><span class="rh-val">'+h[k].RUB+" ₽ · "+h[k].USD+" $</span></div>";
+      }).join("");
+    }
+    function renderCatManage(){
+      $("catManageList").innerHTML=DATA.categories.map(function(c){
+        var used=DATA.expenses.some(function(e){return e.category===c.id;});
+        var delBtn=c.builtin?'<span class="cm-tag">базовая</span>':
+          '<button class="cm-del" data-id="'+c.id+'" aria-label="Удалить"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>';
+        return '<div class="cm-item"><div class="cm-ico">'+c.icon+'</div><div class="cm-name">'+c.name+'</div>'+delBtn+'</div>';
+      }).join("");
+      $("catManageList").querySelectorAll(".cm-del").forEach(function(btn){
+        btn.addEventListener("click",function(){
+          var id=btn.getAttribute("data-id");
+          if(DATA.expenses.some(function(e){return e.category===id;})){ showToast("Нельзя удалить: есть траты"); return; }
+          DATA.categories=DATA.categories.filter(function(c){return c.id!==id;});
+          haptic("medium"); buildChips(); renderCatManage(); renderAll(); showToast("Категория удалена");
+        });
+      });
+    }
+    function buildEmojiGrid(){
+      $("emojiGrid").innerHTML=EMOJI.map(function(e,i){ return '<button class="emoji-btn'+(i===0?" active":"")+'" data-e="'+e+'">'+e+'</button>'; }).join("");
+      $("emojiGrid").querySelectorAll(".emoji-btn").forEach(function(btn){
+        btn.addEventListener("click",function(){
+          $("emojiGrid").querySelectorAll(".emoji-btn").forEach(function(b){b.classList.remove("active");});
+          btn.classList.add("active"); newCatEmoji=btn.getAttribute("data-e");
+        });
+      });
+    }
+    function addCategory(){
+      var name=$("inCatName").value.trim();
+      if(!name){ showToast("Введи название категории"); return; }
+      var id="cat_"+Date.now();
+      DATA.categories.push({ id:id, name:name, icon:newCatEmoji, builtin:false });
+      $("inCatName").value="";
+      haptic("medium"); buildChips(); renderCatManage(); renderAll(); showToast("Категория «"+name+"» добавлена");
+    }
+    function saveSettings(){
+      var s=DATA.settings;
+      var m=parseFloat($("inMonthly").value), d=parseFloat($("inDaily").value);
+      var rr=parseFloat($("inRateRub").value), ru=parseFloat($("inRateUsd").value);
+      if(m>0) s.monthlyBudget=m;
+      if(d>0) s.dailyLimit=d;
+      if(rr>0&&ru>0){ s.rateHistory[todayYmd()]={ RUB:rr, USD:ru }; }
+      else if(rr>0){ var ex=s.rateHistory[todayYmd()]||{USD:rateForYmd(todayYmd(),"USD")}; s.rateHistory[todayYmd()]={RUB:rr,USD:ex.USD}; }
+      haptic("medium"); closeSheets(); renderAll(); showToast("Настройки сохранены");
+    }
+    function updateRate(){
+      var btn=$("btnUpdateRate"), old=btn.textContent; btn.textContent="Загружаю курс…"; btn.disabled=true;
+      fetch("https://open.er-api.com/v6/latest/GEL",{cache:"no-store"})
+        .then(function(r){return r.json();})
+        .then(function(j){
+          if(j&&j.rates&&j.rates.RUB){ $("inRateRub").value=j.rates.RUB.toFixed(2); $("inRateUsd").value=(j.rates.USD||rateForYmd(todayYmd(),"USD")).toFixed(4); showToast("Курс подставлен — нажми «Сохранить»"); }
+          else showToast("Не удалось получить курс");
+        })
+        .catch(function(){ showToast("Нет связи — введи курс вручную"); })
+        .then(function(){ btn.textContent=old; btn.disabled=false; });
+    }
+
+    function syncCurSwitches(){
+      ["curSwitch","curSwitch2"].forEach(function(id){ $(id).querySelectorAll("button").forEach(function(b){ b.classList.toggle("active",b.getAttribute("data-cur")===displayCur); }); });
+    }
+    var toastTimer=null;
+    function showToast(text){ var t=$("toast"); $("toastText").textContent=text; t.classList.add("show"); clearTimeout(toastTimer); toastTimer=setTimeout(function(){ t.classList.remove("show"); },2400); }
+
+    function bindEvents(){
+      document.querySelectorAll(".segment button[data-period]").forEach(function(btn){
+        btn.addEventListener("click",function(){ document.querySelectorAll(".segment button[data-period]").forEach(function(b){b.classList.remove("active");}); btn.classList.add("active"); period=btn.getAttribute("data-period"); haptic(); renderOverview(); });
+      });
+      document.querySelectorAll(".segment button[data-scope]").forEach(function(btn){
+        btn.addEventListener("click",function(){ document.querySelectorAll(".segment button[data-scope]").forEach(function(b){b.classList.remove("active");}); btn.classList.add("active"); scope=btn.getAttribute("data-scope"); haptic(); renderAnalytics(); });
+      });
+      ["curSwitch","curSwitch2"].forEach(function(id){
+        $(id).querySelectorAll("button").forEach(function(btn){ btn.addEventListener("click",function(){ displayCur=btn.getAttribute("data-cur"); haptic(); syncCurSwitches(); renderAll(); }); });
+      });
+      $("inCurSwitch").querySelectorAll("button").forEach(function(btn){
+        btn.addEventListener("click",function(){ $("inCurSwitch").querySelectorAll("button").forEach(function(b){b.classList.remove("active");}); btn.classList.add("active"); inputCur=btn.getAttribute("data-cur"); $("inAmountCur").textContent=CUR_SYM[inputCur]; });
+      });
+      $("dateToggle").querySelectorAll("button").forEach(function(btn){
+        btn.addEventListener("click",function(){
+          $("dateToggle").querySelectorAll("button").forEach(function(b){b.classList.remove("active");}); btn.classList.add("active");
+          var v=btn.getAttribute("data-days");
+          if(v==="pick"){ $("inDate").style.display="block"; $("inDate").max=ymd(dateOf(0));
+            $("inDate").onchange=function(){ var p=new Date($("inDate").value); p.setHours(0,0,0,0); var n=new Date(); n.setHours(0,0,0,0); draft.daysAgo=Math.max(0,Math.round((n-p)/86400000)); };
+          } else { $("inDate").style.display="none"; draft.daysAgo=parseInt(v,10); }
+        });
+      });
+      // week nav
+      $("wkPrev").addEventListener("click",function(){ shiftWeek(1); });
+      $("wkNext").addEventListener("click",function(){ shiftWeek(-1); });
+      var sx=0, sy=0, tracking=false;
+      var wrap=$("wkWrap");
+      wrap.addEventListener("touchstart",function(e){ sx=e.touches[0].clientX; sy=e.touches[0].clientY; tracking=true; },{passive:true});
+      wrap.addEventListener("touchend",function(e){
+        if(!tracking) return; tracking=false;
+        var dx=e.changedTouches[0].clientX-sx, dy=e.changedTouches[0].clientY-sy;
+        if(Math.abs(dx)>40 && Math.abs(dx)>Math.abs(dy)){ if(dx>0) shiftWeek(1); else shiftWeek(-1); }
+      },{passive:true});
+
+      document.querySelectorAll(".nav-btn").forEach(function(btn){ btn.addEventListener("click",function(){ switchScreen(btn.getAttribute("data-nav")); haptic(); }); });
+      $("navAdd").addEventListener("click",function(){ openAdd(); haptic(); });
+      $("btnSettings").addEventListener("click",openSettings);
+      $("btnSave").addEventListener("click",saveExpense);
+      $("btnSaveSettings").addEventListener("click",saveSettings);
+      $("btnUpdateRate").addEventListener("click",updateRate);
+      $("btnAddCat").addEventListener("click",addCategory);
+      $("overlay").addEventListener("click",closeSheets);
+      $("inAmount").addEventListener("input",validate);
+    }
+  </script>
+</body>
+</html>
