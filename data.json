@@ -143,6 +143,14 @@
       "author": "Ольга",
       "note": "фрукты",
       "daysAgo": 1
+    },
+    {
+      "id": 10,
+      "amount": 54.0,
+      "category": "cafe",
+      "author": "Ольга",
+      "note": "еда в кафе",
+      "daysAgo": 1
     }
   ]
 }
