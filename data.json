@@ -95,6 +95,14 @@
       "author": "Ольга",
       "note": "кофе",
       "daysAgo": 0
+    },
+    {
+      "id": 4,
+      "amount": 34.0,
+      "category": "food",
+      "author": "Папа",
+      "note": "яйца",
+      "daysAgo": 0
     }
   ]
 }
