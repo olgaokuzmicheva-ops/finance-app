@@ -103,6 +103,14 @@
       "author": "Папа",
       "note": "яйца",
       "daysAgo": 0
+    },
+    {
+      "id": 5,
+      "amount": 12.19,
+      "category": "other",
+      "author": "Ольга",
+      "note": "дезодорант",
+      "daysAgo": 0
     }
   ]
 }
