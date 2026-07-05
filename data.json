@@ -285,6 +285,14 @@
       "author": "Ольга",
       "note": "одежда",
       "daysAgo": 0
+    },
+    {
+      "id": 27,
+      "amount": 46.0,
+      "category": "food",
+      "author": "Ольга",
+      "note": "продукты",
+      "daysAgo": 0
     }
   ]
 }
