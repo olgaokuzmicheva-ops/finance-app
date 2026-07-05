@@ -223,6 +223,14 @@
       "author": "Ольга",
       "note": "продукты",
       "daysAgo": 2
+    },
+    {
+      "id": 20,
+      "amount": 17.6,
+      "category": "food",
+      "author": "Ольга",
+      "note": "продукты",
+      "daysAgo": 2
     }
   ]
 }
