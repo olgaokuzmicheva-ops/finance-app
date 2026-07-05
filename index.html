@@ -86,6 +86,12 @@
     .wk-fill { width: 100%; border-radius: 7px 7px 0 0; background: linear-gradient(180deg, var(--blue-light), var(--blue)); transition: height .45s cubic-bezier(.4,0,.2,1); min-height: 3px; }
     .wk-col.today .wk-fill { background: linear-gradient(180deg, #9db8ff, var(--blue)); box-shadow: 0 0 0 3px rgba(47,107,255,0.15); }
     .wk-col.today .wk-day { color: var(--blue); font-weight: 700; }
+    .wk-col.over .wk-fill { background: linear-gradient(180deg, #ff9d9d, #d64545); }
+    .wk-col.over .wk-val { color: #d64545; }
+    .wk-col.over.today .wk-fill { background: linear-gradient(180deg, #ffb0b0, #d64545); box-shadow: 0 0 0 3px rgba(214,69,69,.2); }
+    .wk-col.over::before { content: "⚠"; position: absolute; top: -4px; font-size: 12px; color: #d64545; }
+    .wk-col { position: relative; }
+    .over-badge { display:inline-block; background:#fdecec; color:#d64545; padding:3px 9px; border-radius:12px; font-size:12px; font-weight:600; margin-left:8px }
     .wk-day { font-size: 12px; color: var(--ink-3); font-weight: 600; }
     .wk-num { font-size: 10px; color: var(--ink-3); }
     .week-foot { display: flex; justify-content: space-between; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); }
@@ -1580,10 +1586,13 @@
         return { d:d, key:key, val:sumInCur(list,displayCur), gel:sumGel(list), isToday:key===tYmd, future:key>tYmd };
       });
       var max=Math.max.apply(null,dayData.map(function(x){return x.val;}).concat([1]));
+      var dailyLim=DATA.settings.dailyLimit||0;
       $("wkChart").innerHTML=dayData.map(function(x,i){
         var h=x.future?0:Math.max(3,Math.round(x.val/max*100));
+        var over=!x.future && dailyLim>0 && x.gel>dailyLim;
         var valLbl=x.val>0?fmtCur(x.val,displayCur).replace(/\s?[₾₽]|^\$/,"").trim():"";
-        return '<div class="wk-col '+(x.isToday?"today":"")+'" data-day-key="'+x.key+'" style="'+(x.future?"opacity:.35;pointer-events:none":"cursor:pointer")+'">'+
+        var classes=(x.isToday?"today ":"")+(over?"over ":"");
+        return '<div class="wk-col '+classes.trim()+'" data-day-key="'+x.key+'" style="'+(x.future?"opacity:.35;pointer-events:none":"cursor:pointer")+'">'+
           '<div class="wk-val">'+valLbl+'</div>'+
           '<div class="wk-track"><div class="wk-fill" style="height:'+h+'%"></div></div>'+
           '<div class="wk-day">'+WD[i]+'</div><div class="wk-num">'+x.d.getDate()+'</div></div>';
@@ -1875,7 +1884,11 @@
       $("dayDetailTitle").textContent=title;
       var dayList=DATA.expenses.filter(function(e){ return ymd(dateOf(e.daysAgo))===dayKey; });
       var sum=sumInCur(dayList,displayCur);
-      $("dayDetailSub").textContent=dayList.length ? (dayList.length+" · "+fmtCur(sum,displayCur)) : "Пусто";
+      var sumGelDay=sumGel(dayList);
+      var dailyLim=DATA.settings.dailyLimit||0;
+      var over=dailyLim>0 && sumGelDay>dailyLim;
+      var overBadge=over ? '<span class="over-badge">Перебор +'+fmtCur(sumGelDay-dailyLim,"GEL")+'</span>' : '';
+      $("dayDetailSub").innerHTML = (dayList.length ? (dayList.length+" · "+fmtCur(sum,displayCur)) : "Пусто") + overBadge;
       if(!dayList.length){
         $("dayDetailBody").innerHTML='<div style="padding:20px 0;text-align:center;color:var(--ink-3,#999)">За этот день трат нет</div>';
       } else {
