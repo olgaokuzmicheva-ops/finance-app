@@ -87,6 +87,14 @@
       "author": "Папа",
       "note": "курица",
       "daysAgo": 0
+    },
+    {
+      "id": 3,
+      "amount": 16.0,
+      "category": "cafe",
+      "author": "Ольга",
+      "note": "кофе",
+      "daysAgo": 0
     }
   ]
 }
