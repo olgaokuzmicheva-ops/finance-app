@@ -71,5 +71,14 @@
       "builtin": true
     }
   ],
-  "expenses": []
+  "expenses": [
+    {
+      "id": 1,
+      "amount": 6.95,
+      "category": "food",
+      "author": "Ольга",
+      "note": "салями",
+      "daysAgo": 0
+    }
+  ]
 }
