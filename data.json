@@ -151,6 +151,14 @@
       "author": "Ольга",
       "note": "еда в кафе",
       "daysAgo": 1
+    },
+    {
+      "id": 11,
+      "amount": 44.4,
+      "category": "food",
+      "author": "Ольга",
+      "note": "Белмарт",
+      "daysAgo": 1
     }
   ]
 }
