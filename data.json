@@ -2,8 +2,8 @@
   "settings": {
     "baseCurrency": "GEL",
     "displayCurrency": "GEL",
-    "monthlyBudget": 2500,
-    "dailyLimit": 90,
+    "monthlyBudget": 3900.0,
+    "dailyLimit": 130.0,
     "users": [
       "Ольга",
       "Папа"
