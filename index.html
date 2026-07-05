@@ -1537,7 +1537,11 @@
     }
     function renderAll(){ renderOverview(); if ($("screen-analytics").classList.contains("active")) renderAnalytics(); }
 
-    function inOverviewPeriod(e){ var a=daysAgoOf(e); if(period==="week") return a>=0&&a<=6; return a>=0&&a<30; }
+    function inOverviewPeriod(e){
+      if(period==="week"){ var a=daysAgoOf(e); return a>=0&&a<=6; }
+      // month: строго календарный текущий месяц (с 1 по последний день)
+      return ymOfExp(e)===ymOf(0);
+    }
     function inCurrentMonth(e){ return ymOfExp(e)===ymOf(0); }
 
     // ---------- OVERVIEW ----------
