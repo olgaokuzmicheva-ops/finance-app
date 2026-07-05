@@ -71,5 +71,14 @@
       "builtin": true
     }
   ],
-  "expenses": []
+  "expenses": [
+    {
+      "id": 1,
+      "amount": 5.0,
+      "category": "cafe",
+      "author": "Ольга",
+      "note": "тест — удалю",
+      "daysAgo": 0
+    }
+  ]
 }
