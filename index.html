@@ -1739,11 +1739,28 @@
       if(!top.length) return "";
       var rows=top.map(function(e,i){
         var c=catById(e.category);
-        return '<div class="top-item"><div class="top-rank">'+(i+1)+'</div><div class="top-body"><div class="top-note">'+(e.note||c.name)+'</div>'+
-          '<div class="top-meta">'+c.icon+" "+c.name+" · "+e.author+" · "+dayLabel(e.daysAgo)+'</div></div><div class="top-sum">'+moneyExp(e)+'</div></div>';
+        return '<div class="top-item" data-exp-id="'+e.id+'"><div class="top-rank">'+(i+1)+'</div><div class="top-body"><div class="top-note">'+(e.note||c.name)+'</div>'+
+          '<div class="top-meta">'+c.icon+" "+c.name+" · "+e.author+" · "+dayLabel(e.daysAgo)+'</div></div><div class="top-sum">'+moneyExp(e)+'</div>'+
+          '<button class="del-btn" data-del-id="'+e.id+'" title="Удалить" style="background:none;border:none;color:var(--ink-3,#999);padding:8px;font-size:18px;cursor:pointer">✕</button>'+
+          '</div>';
       }).join("");
       return '<div class="card"><div class="card-head"><h2>Крупнейшие траты</h2><span class="sub">'+subLabel+'</span></div>'+rows+'</div>';
     }
+
+    // Обработчик удаления траты
+    document.addEventListener("click", function(ev){
+      var btn=ev.target.closest("[data-del-id]");
+      if(!btn) return;
+      var id=parseInt(btn.getAttribute("data-del-id"),10);
+      var exp=DATA.expenses.find(function(e){return e.id===id;});
+      if(!exp) return;
+      var c=catById(exp.category);
+      if(!confirm("Удалить: "+(exp.note||c.name)+" · "+fmtCur(exp.amount,"GEL")+"?")) return;
+      DATA.expenses = DATA.expenses.filter(function(e){return e.id!==id;});
+      renderAll();
+      apiSend("/api/delete-expense", {payload:{id:id}});
+      showToast("Удалено");
+    });
 
     // ---------- API (двусторонняя синхронизация с ботом Казначея) ----------
     var API_BASE = "https://march-foreign-fraction-thumbnail.trycloudflare.com";
