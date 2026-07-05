@@ -159,6 +159,14 @@
       "author": "Ольга",
       "note": "Белмарт",
       "daysAgo": 1
+    },
+    {
+      "id": 12,
+      "amount": 77.7,
+      "category": "cafe",
+      "author": "Ольга",
+      "note": "обед в столовой",
+      "daysAgo": 4
     }
   ]
 }
