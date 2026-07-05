@@ -351,8 +351,9 @@
     <p style="font-size:13px;color:var(--ink-3);line-height:1.5;margin:-2px 0 12px">Курс сохраняется на текущую дату. Траты этого дня считаются по нему, а завтра ты задашь новый — прошлые останутся со своим.</p>
     <div class="field">
       <label>1 ₾ равен</label>
-      <div class="amount-input" style="margin-bottom:8px"><input type="number" inputmode="decimal" id="inRateRub" placeholder="0"><span class="amount-cur">₽</span></div>
-      <div class="amount-input"><input type="number" inputmode="decimal" id="inRateUsd" placeholder="0"><span class="amount-cur">$</span></div>
+      <div class="amount-input" style="margin-bottom:12px"><input type="number" inputmode="decimal" id="inRateRub" placeholder="0"><span class="amount-cur">₽</span></div>
+      <label>1 $ равен</label>
+      <div class="amount-input"><input type="number" inputmode="decimal" id="inRateUsd" placeholder="0"><span class="amount-cur">₽</span></div>
     </div>
     <button class="btn-ghost" id="btnUpdateRate" style="margin-bottom:16px">Подставить курс из интернета</button>
     <div id="rateHistoryList"></div>
@@ -1442,13 +1443,42 @@
     function ymOf(daysAgo){ var d=dateOf(daysAgo); return d.getFullYear()+"-"+pad(d.getMonth()+1); }
     function todayYmd(){ return ymd(dateOf(0)); }
 
-    // курс на дату: точный или ближайший предыдущий, иначе самый ранний
+    // Курс на дату — новый формат хранения rateHistory:
+    //   { "YYYY-MM-DD": { "gel_rub": 29.33, "usd_rub": 84.5 } }
+    //   gel_rub = сколько ₽ за 1 ₾   |   usd_rub = сколько ₽ за 1 $
+    // Возвращает: количество ЕДИНИЦ cur за 1 ₾
+    //   cur='RUB' → gel_rub
+    //   cur='USD' → gel_rub / usd_rub  (то есть сколько $ за 1 ₾)
     function rateForYmd(s, cur){
       if (cur==="GEL") return 1;
       var h=DATA.settings.rateHistory, keys=Object.keys(h).sort(), pick=null;
       for (var i=0;i<keys.length;i++){ if (keys[i]<=s) pick=keys[i]; }
       if (pick===null) pick=keys[0];
-      return (h[pick] && h[pick][cur]) || 1;
+      var day = h[pick] || {};
+      // обратная совместимость на случай если попадётся старая запись:
+      if (cur==="RUB") return day.gel_rub || day.RUB || 1;
+      if (cur==="USD") {
+        if (day.usd_rub && day.gel_rub) return day.gel_rub / day.usd_rub;
+        return day.USD || 1;
+      }
+      return 1;
+    }
+    function getUsdRubForYmd(s){
+      var h=DATA.settings.rateHistory, keys=Object.keys(h).sort(), pick=null;
+      for (var i=0;i<keys.length;i++){ if (keys[i]<=s) pick=keys[i]; }
+      if (pick===null) pick=keys[0];
+      var day = h[pick] || {};
+      // обратная совместимость
+      if (day.usd_rub) return day.usd_rub;
+      if (day.RUB && day.USD) return day.RUB / day.USD;
+      return 80;
+    }
+    function getGelRubForYmd(s){
+      var h=DATA.settings.rateHistory, keys=Object.keys(h).sort(), pick=null;
+      for (var i=0;i<keys.length;i++){ if (keys[i]<=s) pick=keys[i]; }
+      if (pick===null) pick=keys[0];
+      var day = h[pick] || {};
+      return day.gel_rub || day.RUB || 29;
     }
     function fmtCur(v, cur){ var r=Math.round(v), s=r.toLocaleString("ru-RU"); return cur==="USD"?"$"+s:s+" "+CUR_SYM[cur]; }
     // одна трата в валюте по курсу её дня
@@ -1474,6 +1504,8 @@
       $("loading").style.display="none"; $("app").style.display="block"; $("navbar").style.display="flex";
       buildChips(); buildAuthorToggle(); buildEmojiGrid(); bindEvents();
       renderAll();
+      // Если курс на сегодня не задан — подтянем автоматически из ЦБ РФ
+      try { autoRateIfMissing(); } catch(e) {}
     }
     function renderAll(){ renderOverview(); if ($("screen-analytics").classList.contains("active")) renderAnalytics(); }
 
@@ -1794,7 +1826,8 @@
     function openSettings(){
       var s=DATA.settings;
       $("inMonthly").value=s.monthlyBudget; $("inDaily").value=s.dailyLimit;
-      $("inRateRub").value=rateForYmd(todayYmd(),"RUB"); $("inRateUsd").value=rateForYmd(todayYmd(),"USD");
+      $("inRateRub").value=getGelRubForYmd(todayYmd());
+      $("inRateUsd").value=getUsdRubForYmd(todayYmd());
       renderRateHistory(); renderCatManage();
       openSheet($("sheetSettings"));
     }
@@ -1803,7 +1836,10 @@
       $("rateHistoryList").innerHTML=keys.map(function(k){
         var parts=k.split("-");
         var label=parseInt(parts[2],10)+" "+MONTHS[parseInt(parts[1],10)-1]+" "+parts[0];
-        return '<div class="rh-item'+(k===t?" is-today":"")+'"><span class="rh-date">'+label+(k===t?" · сегодня":"")+'</span><span class="rh-val">'+h[k].RUB+" ₽ · "+h[k].USD+" $</span></div>";
+        var day=h[k]||{};
+        var g=day.gel_rub||day.RUB||0;
+        var u=day.usd_rub||(day.RUB && day.USD ? Math.round((day.RUB/day.USD)*100)/100 : 0);
+        return '<div class="rh-item'+(k===t?" is-today":"")+'"><span class="rh-date">'+label+(k===t?" · сегодня":"")+'</span><span class="rh-val">1 ₾ = '+g+' ₽ · 1 $ = '+u+' ₽</span></div>';
       }).join("");
     }
     function renderCatManage(){
@@ -1842,23 +1878,79 @@
     function saveSettings(){
       var s=DATA.settings;
       var m=parseFloat($("inMonthly").value), d=parseFloat($("inDaily").value);
+      // rr = 1 ₾ равен X ₽   |   ru = 1 $ равен Y ₽
       var rr=parseFloat($("inRateRub").value), ru=parseFloat($("inRateUsd").value);
       if(m>0) s.monthlyBudget=m;
       if(d>0) s.dailyLimit=d;
-      if(rr>0&&ru>0){ s.rateHistory[todayYmd()]={ RUB:rr, USD:ru }; }
-      else if(rr>0){ var ex=s.rateHistory[todayYmd()]||{USD:rateForYmd(todayYmd(),"USD")}; s.rateHistory[todayYmd()]={RUB:rr,USD:ex.USD}; }
+      if(rr>0&&ru>0){ s.rateHistory[todayYmd()]={ gel_rub:rr, usd_rub:ru }; }
+      else if(rr>0){ var ex=s.rateHistory[todayYmd()]||{usd_rub:getUsdRubForYmd(todayYmd())}; s.rateHistory[todayYmd()]={gel_rub:rr,usd_rub:ex.usd_rub}; }
+      else if(ru>0){ var ex2=s.rateHistory[todayYmd()]||{gel_rub:getGelRubForYmd(todayYmd())}; s.rateHistory[todayYmd()]={gel_rub:ex2.gel_rub,usd_rub:ru}; }
+      // Sync с ботом (если открыто через reply-keyboard)
+      if(tg && typeof tg.sendData==="function"){
+        try{ tg.sendData(JSON.stringify({type:"rate", payload:{date:todayYmd(), gel_rub:s.rateHistory[todayYmd()].gel_rub, usd_rub:s.rateHistory[todayYmd()].usd_rub, monthlyBudget:s.monthlyBudget, dailyLimit:s.dailyLimit}})); }catch(e){}
+      }
       haptic("medium"); closeSheets(); renderAll(); showToast("Настройки сохранены");
     }
+    // Автоматически подставить курс из интернета.
+    // Основной путь: CBR (открытый API, отдаёт цену USD и GEL в рублях).
+    // Fallback: NBG (Национальный банк Грузии) — курсы валют относительно лари.
     function updateRate(){
       var btn=$("btnUpdateRate"), old=btn.textContent; btn.textContent="Загружаю курс…"; btn.disabled=true;
-      fetch("https://open.er-api.com/v6/latest/GEL",{cache:"no-store"})
-        .then(function(r){return r.json();})
+      fetch("https://www.cbr-xml-daily.ru/daily_json.js",{cache:"no-store"})
+        .then(function(r){ if(!r.ok) throw new Error("cbr"); return r.json(); })
         .then(function(j){
-          if(j&&j.rates&&j.rates.RUB){ $("inRateRub").value=j.rates.RUB.toFixed(2); $("inRateUsd").value=(j.rates.USD||rateForYmd(todayYmd(),"USD")).toFixed(4); showToast("Курс подставлен — нажми «Сохранить»"); }
-          else showToast("Не удалось получить курс");
+          if(j && j.Valute){
+            var usd_rub = j.Valute.USD ? j.Valute.USD.Value : null;
+            var gel_rub = j.Valute.GEL ? j.Valute.GEL.Value : null; // если есть — сразу
+            if(usd_rub){
+              $("inRateUsd").value=usd_rub.toFixed(2);
+              if(gel_rub){
+                $("inRateRub").value=gel_rub.toFixed(2);
+                showToast("Курс подставлен (ЦБ РФ) — жми «Сохранить»");
+                return;
+              }
+              // GEL не в CBR — пробуем NBG для лари
+              return fetch("https://nbg.gov.ge/gw/api/ct/monetarypolicy/currencies/en/json?currencies=USD&date="+todayYmd(),{cache:"no-store"})
+                .then(function(r){ return r.json(); })
+                .then(function(nbg){
+                  // NBG: 1 USD = X лари → 1 лари = usd_rub / X ₽
+                  var usdGelRate = null;
+                  try { usdGelRate = nbg[0].currencies[0].rate; } catch(e){}
+                  if(usdGelRate){
+                    var gr = usd_rub / usdGelRate;
+                    $("inRateRub").value=gr.toFixed(2);
+                    showToast("Курс подставлен (ЦБ РФ + НБГ) — жми «Сохранить»");
+                  } else {
+                    showToast("Только $ = "+usd_rub.toFixed(2)+" ₽. Курс лари поставь вручную.");
+                  }
+                });
+            }
+          }
+          showToast("Не удалось получить курс");
         })
         .catch(function(){ showToast("Нет связи — введи курс вручную"); })
         .then(function(){ btn.textContent=old; btn.disabled=false; });
+    }
+    // Автоподстановка курса при открытии Mini App, если на сегодня курса нет
+    function autoRateIfMissing(){
+      var t=todayYmd();
+      if(DATA.settings.rateHistory[t]) return; // уже есть
+      fetch("https://www.cbr-xml-daily.ru/daily_json.js",{cache:"no-store"})
+        .then(function(r){ return r.json(); })
+        .then(function(j){
+          if(!j || !j.Valute || !j.Valute.USD) return;
+          var usd_rub=j.Valute.USD.Value;
+          var gel_rub=j.Valute.GEL ? j.Valute.GEL.Value : null;
+          if(gel_rub && usd_rub){
+            DATA.settings.rateHistory[t]={gel_rub:Math.round(gel_rub*100)/100, usd_rub:Math.round(usd_rub*100)/100};
+            renderAll();
+          } else if(usd_rub){
+            // без gel_rub оставляем вчерашний
+            DATA.settings.rateHistory[t]={gel_rub:getGelRubForYmd(t), usd_rub:Math.round(usd_rub*100)/100};
+            renderAll();
+          }
+        })
+        .catch(function(){});
     }
 
     function syncCurSwitches(){
