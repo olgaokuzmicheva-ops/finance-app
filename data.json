@@ -111,6 +111,14 @@
       "author": "Ольга",
       "note": "дезодорант",
       "daysAgo": 0
+    },
+    {
+      "id": 6,
+      "amount": 24.89,
+      "category": "food",
+      "author": "Ольга",
+      "note": "продукты",
+      "daysAgo": 0
     }
   ]
 }
