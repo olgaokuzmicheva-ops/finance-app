@@ -277,6 +277,14 @@
       "author": "Ольга",
       "note": "кофе",
       "daysAgo": 2
+    },
+    {
+      "id": 26,
+      "amount": 15.0,
+      "category": "clothing",
+      "author": "Ольга",
+      "note": "одежда",
+      "daysAgo": 0
     }
   ]
 }
