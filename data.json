@@ -309,6 +309,14 @@
       "author": "Ольга",
       "note": "купальник",
       "daysAgo": 0
+    },
+    {
+      "id": 30,
+      "amount": 60.0,
+      "category": "cafe",
+      "author": "Ольга",
+      "note": "кафе",
+      "daysAgo": 0
     }
   ]
 }
