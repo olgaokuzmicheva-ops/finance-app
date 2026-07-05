@@ -84,7 +84,7 @@
       "category": "food",
       "author": "Ольга",
       "note": "салями",
-      "daysAgo": 1
+      "date": "2026-07-05"
     },
     {
       "id": 2,
@@ -92,7 +92,7 @@
       "category": "food",
       "author": "Папа",
       "note": "курица",
-      "daysAgo": 1
+      "date": "2026-07-05"
     },
     {
       "id": 3,
@@ -100,7 +100,7 @@
       "category": "cafe",
       "author": "Ольга",
       "note": "кофе",
-      "daysAgo": 1
+      "date": "2026-07-05"
     },
     {
       "id": 4,
@@ -108,7 +108,7 @@
       "category": "food",
       "author": "Папа",
       "note": "яйца",
-      "daysAgo": 1
+      "date": "2026-07-05"
     },
     {
       "id": 5,
@@ -116,7 +116,7 @@
       "category": "other",
       "author": "Ольга",
       "note": "дезодорант",
-      "daysAgo": 1
+      "date": "2026-07-05"
     },
     {
       "id": 6,
@@ -124,7 +124,7 @@
       "category": "food",
       "author": "Ольга",
       "note": "продукты",
-      "daysAgo": 1
+      "date": "2026-07-05"
     },
     {
       "id": 7,
@@ -132,7 +132,7 @@
       "category": "cafe",
       "author": "Ольга",
       "note": "кофе",
-      "daysAgo": 2
+      "date": "2026-07-04"
     },
     {
       "id": 8,
@@ -140,7 +140,7 @@
       "category": "food",
       "author": "Ольга",
       "note": "продукты",
-      "daysAgo": 2
+      "date": "2026-07-04"
     },
     {
       "id": 9,
@@ -148,7 +148,7 @@
       "category": "food",
       "author": "Ольга",
       "note": "фрукты",
-      "daysAgo": 2
+      "date": "2026-07-04"
     },
     {
       "id": 10,
@@ -156,7 +156,7 @@
       "category": "cafe",
       "author": "Ольга",
       "note": "еда в кафе",
-      "daysAgo": 2
+      "date": "2026-07-04"
     },
     {
       "id": 11,
@@ -164,7 +164,7 @@
       "category": "food",
       "author": "Ольга",
       "note": "Белмарт",
-      "daysAgo": 2
+      "date": "2026-07-04"
     },
     {
       "id": 12,
@@ -172,7 +172,7 @@
       "category": "cafe",
       "author": "Ольга",
       "note": "обед в столовой",
-      "daysAgo": 5
+      "date": "2026-07-01"
     },
     {
       "id": 13,
@@ -180,7 +180,7 @@
       "category": "cafe",
       "author": "Ольга",
       "note": "кафе",
-      "daysAgo": 5
+      "date": "2026-07-01"
     },
     {
       "id": 14,
@@ -188,7 +188,7 @@
       "category": "cafe",
       "author": "Ольга",
       "note": "ресторан",
-      "daysAgo": 4
+      "date": "2026-07-02"
     },
     {
       "id": 15,
@@ -196,7 +196,7 @@
       "category": "food",
       "author": "Ольга",
       "note": "продукты",
-      "daysAgo": 4
+      "date": "2026-07-02"
     },
     {
       "id": 16,
@@ -204,7 +204,7 @@
       "category": "cafe",
       "author": "Ольга",
       "note": "кофе",
-      "daysAgo": 4
+      "date": "2026-07-02"
     },
     {
       "id": 17,
@@ -212,7 +212,7 @@
       "category": "food",
       "author": "Ольга",
       "note": "фрукты",
-      "daysAgo": 4
+      "date": "2026-07-02"
     },
     {
       "id": 18,
@@ -220,7 +220,7 @@
       "category": "food",
       "author": "Ольга",
       "note": "продукты",
-      "daysAgo": 4
+      "date": "2026-07-02"
     },
     {
       "id": 19,
@@ -228,7 +228,7 @@
       "category": "food",
       "author": "Ольга",
       "note": "продукты",
-      "daysAgo": 3
+      "date": "2026-07-03"
     },
     {
       "id": 20,
@@ -236,7 +236,7 @@
       "category": "food",
       "author": "Ольга",
       "note": "продукты",
-      "daysAgo": 3
+      "date": "2026-07-03"
     },
     {
       "id": 21,
@@ -244,7 +244,7 @@
       "category": "cafe",
       "author": "Ольга",
       "note": "ресторан",
-      "daysAgo": 3
+      "date": "2026-07-03"
     },
     {
       "id": 22,
@@ -252,7 +252,7 @@
       "category": "food",
       "author": "Ольга",
       "note": "продукты",
-      "daysAgo": 3
+      "date": "2026-07-03"
     },
     {
       "id": 23,
@@ -260,7 +260,7 @@
       "category": "food",
       "author": "Ольга",
       "note": "фрукты",
-      "daysAgo": 3
+      "date": "2026-07-03"
     },
     {
       "id": 24,
@@ -268,7 +268,7 @@
       "category": "food",
       "author": "Ольга",
       "note": "фрукты",
-      "daysAgo": 3
+      "date": "2026-07-03"
     },
     {
       "id": 25,
@@ -276,7 +276,7 @@
       "category": "cafe",
       "author": "Ольга",
       "note": "кофе",
-      "daysAgo": 3
+      "date": "2026-07-03"
     },
     {
       "id": 26,
@@ -284,7 +284,7 @@
       "category": "clothing",
       "author": "Ольга",
       "note": "одежда",
-      "daysAgo": 3
+      "date": "2026-07-03"
     },
     {
       "id": 27,
@@ -292,7 +292,7 @@
       "category": "food",
       "author": "Ольга",
       "note": "продукты",
-      "daysAgo": 3
+      "date": "2026-07-03"
     },
     {
       "id": 28,
@@ -300,7 +300,7 @@
       "category": "cafe",
       "author": "Ольга",
       "note": "кофе",
-      "daysAgo": 3
+      "date": "2026-07-03"
     },
     {
       "id": 29,
@@ -308,7 +308,7 @@
       "category": "clothing",
       "author": "Ольга",
       "note": "купальник",
-      "daysAgo": 3
+      "date": "2026-07-03"
     },
     {
       "id": 30,
@@ -316,7 +316,7 @@
       "category": "cafe",
       "author": "Ольга",
       "note": "кафе",
-      "daysAgo": 3
+      "date": "2026-07-03"
     }
   ]
 }

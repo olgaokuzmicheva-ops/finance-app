@@ -1448,7 +1448,8 @@
     var newCatEmoji = "🛒";
     var draft = { category: null, author: null, daysAgo: 0 };
     var CUR_SYM = { GEL: "₾", RUB: "₽", USD: "$" };
-    var MONTHS = ["янв","фев","мар","апр","май","июн","июл","авг","сен","окт","ноя","дек"];
+    var MONTHS_NOM = ["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"];
+    var MONTHS_GEN = ["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"];
     var WD = ["Пн","Вт","Ср","Чт","Пт","Сб","Вс"];
     var WD_FULL = ["Воскресенье","Понедельник","Вторник","Среда","Четверг","Пятница","Суббота"];
     var EMOJI = ["🛒","☕","🚗","🏠","💊","🎬","📦","🍔","🎁","👕","✈️","📚","💻","🐾","💄","⚽","🎵","🌷","🧾","🔧","🍷","🎓","💅","🚿"];
@@ -1460,6 +1461,15 @@
     function dateOf(daysAgo){ var d=new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()-daysAgo); return d; }
     function ymOf(daysAgo){ var d=dateOf(daysAgo); return d.getFullYear()+"-"+pad(d.getMonth()+1); }
     function todayYmd(){ return ymd(dateOf(0)); }
+    // Расчёт из абсолютной даты expense.date (формат YYYY-MM-DD).
+    // Fallback на устаревшее поле daysAgo — только для старых записей без date.
+    function parseYmd(s){ var p=s.split("-"); var d=new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2])); d.setHours(0,0,0,0); return d; }
+    function daysAgoOf(e){
+      if(e.date){ var t=dateOf(0); return Math.round((t-parseYmd(e.date))/86400000); }
+      return e.daysAgo||0;
+    }
+    function ymdOfExp(e){ return e.date ? e.date : ymd(dateOf(e.daysAgo)); }
+    function ymOfExp(e){ return e.date ? e.date.substring(0,7) : ymOf(e.daysAgo); }
 
     // Курс на дату — новый формат хранения rateHistory:
     //   { "YYYY-MM-DD": { "gel_rub": 29.33, "usd_rub": 84.5 } }
@@ -1500,7 +1510,7 @@
     }
     function fmtCur(v, cur){ var r=Math.round(v), s=r.toLocaleString("ru-RU"); return cur==="USD"?"$"+s:s+" "+CUR_SYM[cur]; }
     // одна трата в валюте по курсу её дня
-    function expInCur(e, cur){ return cur==="GEL"?e.amount:e.amount*rateForYmd(ymd(dateOf(e.daysAgo)),cur); }
+    function expInCur(e, cur){ return cur==="GEL"?e.amount:e.amount*rateForYmd(ymdOfExp(e),cur); }
     function sumInCur(list, cur){ return list.reduce(function(a,e){ return a+expInCur(e,cur); },0); }
     // сумма в лари по сегодняшнему курсу (бюджет, лимит, остаток)
     function convToday(gel, cur){ return cur==="GEL"?gel:gel*rateForYmd(todayYmd(),cur); }
@@ -1511,7 +1521,7 @@
     function moneyToday(gel){ return fmtCur(convToday(gel,displayCur),displayCur); }
 
     function catById(id){ return DATA.categories.find(function(c){ return c.id===id; }); }
-    function dayLabel(daysAgo){ if(daysAgo===0)return "Сегодня"; if(daysAgo===1)return "Вчера"; var d=dateOf(daysAgo); return d.getDate()+" "+MONTHS[d.getMonth()]; }
+    function dayLabel(daysAgo){ if(daysAgo===0)return "Сегодня"; if(daysAgo===1)return "Вчера"; var d=dateOf(daysAgo); return d.getDate()+" "+MONTHS_GEN[d.getMonth()]; }
 
     fetch("data.json", { cache: "no-store" })
       .then(function(r){ if(!r.ok) throw new Error(); return r.json(); })
@@ -1527,8 +1537,8 @@
     }
     function renderAll(){ renderOverview(); if ($("screen-analytics").classList.contains("active")) renderAnalytics(); }
 
-    function inOverviewPeriod(e){ if(period==="week") return e.daysAgo>=0&&e.daysAgo<=6; return e.daysAgo>=0&&e.daysAgo<30; }
-    function inCurrentMonth(e){ return ymOf(e.daysAgo)===ymOf(0); }
+    function inOverviewPeriod(e){ var a=daysAgoOf(e); if(period==="week") return a>=0&&a<=6; return a>=0&&a<30; }
+    function inCurrentMonth(e){ return ymOfExp(e)===ymOf(0); }
 
     // ---------- OVERVIEW ----------
     function renderOverview(){
@@ -1553,7 +1563,7 @@
       $("heroFootLeft").innerHTML = leftGel<0 ? 'Перерасход <b class="over">'+moneyToday(Math.abs(leftGel))+"</b>" : "Осталось <b>"+moneyToday(leftGel)+"</b>";
       $("heroFootRight").textContent = period==="month" ? "Бюджет "+moneyToday(s.monthlyBudget) : "Ориентир "+moneyToday(s.dailyLimit)+"/день";
 
-      var todayList=DATA.expenses.filter(function(e){return e.daysAgo===0;});
+      var todayList=DATA.expenses.filter(function(e){return daysAgoOf(e)===0;});
       var todayGel=sumGel(todayList);
       var dLeftGel=s.dailyLimit-todayGel, dOver=dLeftGel<0;
       var dPct=s.dailyLimit>0?Math.min(100,Math.round(todayGel/s.dailyLimit*100)):0;
@@ -1574,7 +1584,7 @@
     }
     function maxWeekOffset(){
       if(!DATA.expenses.length) return 0;
-      var maxAgo=Math.max.apply(null,DATA.expenses.map(function(e){return e.daysAgo;}));
+      var maxAgo=Math.max.apply(null,DATA.expenses.map(function(e){return daysAgoOf(e);}));
       return Math.floor(maxAgo/7)+1;
     }
     function renderWeekChart(){
@@ -1585,7 +1595,7 @@
       // сумма по каждому дню (в выбранной валюте)
       var dayData=days.map(function(d){
         var key=ymd(d);
-        var list=DATA.expenses.filter(function(e){ return ymd(dateOf(e.daysAgo))===key; });
+        var list=DATA.expenses.filter(function(e){ return ymdOfExp(e)===key; });
         return { d:d, key:key, val:sumInCur(list,displayCur), gel:sumGel(list), isToday:key===tYmd, future:key>tYmd };
       });
       var max=Math.max.apply(null,dayData.map(function(x){return x.val;}).concat([1]));
@@ -1610,11 +1620,11 @@
 
       var sun=days[6];
       var range = mon.getMonth()===sun.getMonth()
-        ? mon.getDate()+"–"+sun.getDate()+" "+MONTHS[sun.getMonth()]
-        : mon.getDate()+" "+MONTHS[mon.getMonth()]+" — "+sun.getDate()+" "+MONTHS[sun.getMonth()];
+        ? mon.getDate()+"–"+sun.getDate()+" "+MONTHS_GEN[sun.getMonth()]
+        : mon.getDate()+" "+MONTHS_GEN[mon.getMonth()]+" — "+sun.getDate()+" "+MONTHS_GEN[sun.getMonth()];
       $("wkRange").textContent = weekOffset===0 ? "Эта неделя" : range;
 
-      var weekList=DATA.expenses.filter(function(e){ var k=ymd(dateOf(e.daysAgo)); return k>=ymd(mon)&&k<=ymd(sun); });
+      var weekList=DATA.expenses.filter(function(e){ var k=ymdOfExp(e); return k>=ymd(mon)&&k<=ymd(sun); });
       var wsum=sumInCur(weekList,displayCur);
       var daysElapsed=weekOffset===0?((dateOf(0)-mon)/86400000+1):7;
       $("wkTotal").textContent=fmtCur(wsum,displayCur);
@@ -1644,7 +1654,7 @@
       $("catDetailTitle").textContent=c.icon+"  "+c.name;
       $("catDetailSub").textContent=moneyList(pe)+" · "+(period==="month"?"за месяц":"за неделю")+" · "+pe.length+" трат";
       var byDay={};
-      pe.forEach(function(e){ (byDay[e.daysAgo]=byDay[e.daysAgo]||[]).push(e); });
+      pe.forEach(function(e){ var a=daysAgoOf(e); (byDay[a]=byDay[a]||[]).push(e); });
       var daysK=Object.keys(byDay).map(Number).sort(function(a,b){return a-b;});
       var body=$("catDetailBody");
       if(!daysK.length){ body.innerHTML='<div class="empty">В этой категории пока пусто.</div>'; }
@@ -1682,11 +1692,11 @@
     }
     function monthsData(){
       var res={};
-      DATA.expenses.forEach(function(e){ var k=ymOf(e.daysAgo); (res[k]=res[k]||[]).push(e); });
+      DATA.expenses.forEach(function(e){ var k=ymOfExp(e); (res[k]=res[k]||[]).push(e); });
       var keys=Object.keys(res).sort().slice(-6);
       return keys.map(function(k){
         var mi=parseInt(k.split("-")[1],10)-1;
-        return { key:k, label:MONTHS[mi], gel:sumGel(res[k]), cur:sumInCur(res[k],displayCur), current:k===ymOf(0) };
+        return { key:k, label:MONTHS_NOM[mi], gel:sumGel(res[k]), cur:sumInCur(res[k],displayCur), current:k===ymOf(0) };
       });
     }
     function renderAnalytics(){
@@ -1717,14 +1727,14 @@
         var now=new Date(), daysPassed=now.getDate(), daysInMonth=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
         var perDay=daysPassed?spentCur/daysPassed:0, projected=perDay*daysInMonth;
         var prevKey=(function(){ var d=new Date(now.getFullYear(),now.getMonth()-1,1); return d.getFullYear()+"-"+pad(d.getMonth()+1); })();
-        var prevGel=sumGel(DATA.expenses.filter(function(e){return ymOf(e.daysAgo)===prevKey;}));
+        var prevGel=sumGel(DATA.expenses.filter(function(e){return ymOfExp(e)===prevKey;}));
         var curGel=sumGel(cm);
         var diffPct=prevGel>0?Math.round((curGel-prevGel)/prevGel*100):null;
         var projOverCur=convToday(s.monthlyBudget,displayCur);
         var trendHtml = diffPct===null ? '<span class="sub">нет данных за прошлый месяц</span>'
           : (diffPct>=0?'<span class="trend-up">▲ на '+diffPct+'% больше</span>':'<span class="trend-down">▼ на '+Math.abs(diffPct)+'% меньше</span>')+' <span class="sub">чем за прошлый месяц к этому дню</span>';
         body.innerHTML=
-          '<div class="card"><div class="card-head"><h2>'+MONTHS[now.getMonth()]+', итог месяца</h2><span class="sub">'+daysPassed+' из '+daysInMonth+' дн.</span></div><div class="stat-grid">'+
+          '<div class="card"><div class="card-head"><h2>'+MONTHS_NOM[now.getMonth()]+', итог месяца</h2><span class="sub">'+daysPassed+' из '+daysInMonth+' дн.</span></div><div class="stat-grid">'+
             '<div class="stat"><div class="lbl">Потрачено</div><div class="val">'+fmtCur(spentCur,displayCur)+'</div></div>'+
             '<div class="stat"><div class="lbl">В среднем в день</div><div class="val">'+fmtCur(perDay,displayCur)+'</div></div>'+
             '<div class="stat"><div class="lbl">Прогноз к концу месяца</div><div class="val" '+(projected>projOverCur?'style="color:var(--danger)"':"")+'>'+fmtCur(projected,displayCur)+'</div></div>'+
@@ -1768,7 +1778,7 @@
       var rows=top.map(function(e,i){
         var c=catById(e.category);
         return '<div class="top-item" data-exp-id="'+e.id+'"><div class="top-rank">'+(i+1)+'</div><div class="top-body"><div class="top-note">'+(e.note||c.name)+'</div>'+
-          '<div class="top-meta">'+c.icon+" "+c.name+" · "+e.author+" · "+dayLabel(e.daysAgo)+'</div></div><div class="top-sum">'+moneyExp(e)+'</div>'+
+          '<div class="top-meta">'+c.icon+" "+c.name+" · "+e.author+" · "+dayLabel(daysAgoOf(e))+'</div></div><div class="top-sum">'+moneyExp(e)+'</div>'+
           '<button class="del-btn" data-del-id="'+e.id+'" title="Удалить" style="background:none;border:none;color:var(--ink-3,#999);padding:8px;font-size:18px;cursor:pointer">✕</button>'+
           '</div>';
       }).join("");
@@ -1883,9 +1893,9 @@
       var isToday=dayKey===todayYmd();
       var yesterdayKey=ymd(dateOf(1));
       var titleWd=WD_FULL ? WD_FULL[date.getDay()] : "";
-      var title = isToday ? "Сегодня" : (dayKey===yesterdayKey ? "Вчера" : date.getDate()+" "+MONTHS[date.getMonth()]);
+      var title = isToday ? "Сегодня" : (dayKey===yesterdayKey ? "Вчера" : date.getDate()+" "+MONTHS_GEN[date.getMonth()]);
       $("dayDetailTitle").textContent=title;
-      var dayList=DATA.expenses.filter(function(e){ return ymd(dateOf(e.daysAgo))===dayKey; });
+      var dayList=DATA.expenses.filter(function(e){ return ymdOfExp(e)===dayKey; });
       var sum=sumInCur(dayList,displayCur);
       var sumGelDay=sumGel(dayList);
       var dailyLim=DATA.settings.dailyLimit||0;
@@ -1931,7 +1941,7 @@
       var day=ymd(dateOf(draft.daysAgo));
       var gel=inputCur==="GEL"?raw:raw/rateForYmd(day,inputCur);
       var nextId=DATA.expenses.reduce(function(m,e){return Math.max(m,e.id);},0)+1;
-      var expense={ id:nextId, amount:Math.round(gel), category:draft.category, author:draft.author, note:$("inNote").value.trim(), daysAgo:draft.daysAgo };
+      var expense={ id:nextId, amount:Math.round(gel), category:draft.category, author:draft.author, note:$("inNote").value.trim(), date:day, daysAgo:draft.daysAgo };
       DATA.expenses.push(expense);
       haptic("medium");
       if(tg&&tg.HapticFeedback){ try{tg.HapticFeedback.notificationOccurred("success");}catch(e){} }
@@ -1955,7 +1965,7 @@
       var h=DATA.settings.rateHistory, keys=Object.keys(h).sort().reverse().slice(0,5), t=todayYmd();
       $("rateHistoryList").innerHTML=keys.map(function(k){
         var parts=k.split("-");
-        var label=parseInt(parts[2],10)+" "+MONTHS[parseInt(parts[1],10)-1]+" "+parts[0];
+        var label=parseInt(parts[2],10)+" "+MONTHS_GEN[parseInt(parts[1],10)-1]+" "+parts[0];
         var day=h[k]||{};
         var g=day.gel_rub||day.RUB||0;
         var u=day.usd_rub||(day.RUB && day.USD ? Math.round((day.RUB/day.USD)*100)/100 : 0);
