@@ -1745,6 +1745,18 @@
       return '<div class="card"><div class="card-head"><h2>Крупнейшие траты</h2><span class="sub">'+subLabel+'</span></div>'+rows+'</div>';
     }
 
+    // ---------- API (двусторонняя синхронизация с ботом Казначея) ----------
+    var API_BASE = "https://licence-fax-ears-nsw.trycloudflare.com";
+    function apiSend(path, body){
+      if(!tg || !tg.initData){ return; }
+      var payload = Object.assign({}, body, {initData: tg.initData});
+      return fetch(API_BASE + path, {
+        method: "POST",
+        headers: {"Content-Type": "application/json", "X-Init-Data": tg.initData},
+        body: JSON.stringify(payload)
+      }).then(function(r){ return r.json(); }).catch(function(e){ console.warn("api fail", e); });
+    }
+
     // ---------- Inline dialog «Новая категория» ----------
     // prompt() в Telegram WebView часто не работает — используем свой мини-диалог.
     function openNewCatDialog(){
@@ -1778,10 +1790,8 @@
           buildChips();
           var freshBtn=$("catChips").querySelector('[data-cat="'+id+'"]');
           if(freshBtn){ freshBtn.classList.add("active"); draft.category=id; haptic("medium"); validate(); }
-          // sync с ботом
-          if(tg && typeof tg.sendData==="function"){
-            try{ tg.sendData(JSON.stringify({type:"category", payload:{id:id, name:name, icon:emoji}})); }catch(e){}
-          }
+          // sync с сервером
+          apiSend("/api/add-category", {payload:{id:id, name:name, icon:emoji}});
         });
       }
       document.getElementById("ncName").value="";
@@ -1844,19 +1854,11 @@
       DATA.expenses.push(expense);
       haptic("medium");
       if(tg&&tg.HapticFeedback){ try{tg.HapticFeedback.notificationOccurred("success");}catch(e){} }
-      // Отправляем боту (Казначей): он запишет и сохранит на сервере.
-      // sendData работает только когда Mini App открыт через reply-keyboard кнопку.
-      // Из Menu Button - не работает: тогда предупреждаем пользователя.
-      var sent=false;
-      if(tg && typeof tg.sendData==="function"){
-        try{ tg.sendData(JSON.stringify({type:"expense", payload:expense})); sent=true; }catch(e){}
-      }
       closeSheets(); renderAll();
-      if(sent){
-        showToast(fmtCur(gel,"GEL")+" · "+catById(draft.category).name+" · синхронизировано");
-      } else {
-        showToast("Сохранено локально. Открой через кнопку 💸 Финансы внизу чата, чтобы синхронизировать с ботом.");
-      }
+      showToast(fmtCur(gel,"GEL")+" · "+catById(draft.category).name);
+      // Отправляем на сервер (двусторонняя синхронизация через API-туннель).
+      // Работает при любом способе открытия Mini App (Menu Button, Reply-кнопка, inline).
+      apiSend("/api/add-expense", {payload: expense});
     }
 
     // ---------- SETTINGS ----------
@@ -1922,10 +1924,15 @@
       if(rr>0&&ru>0){ s.rateHistory[todayYmd()]={ gel_rub:rr, usd_rub:ru }; }
       else if(rr>0){ var ex=s.rateHistory[todayYmd()]||{usd_rub:getUsdRubForYmd(todayYmd())}; s.rateHistory[todayYmd()]={gel_rub:rr,usd_rub:ex.usd_rub}; }
       else if(ru>0){ var ex2=s.rateHistory[todayYmd()]||{gel_rub:getGelRubForYmd(todayYmd())}; s.rateHistory[todayYmd()]={gel_rub:ex2.gel_rub,usd_rub:ru}; }
-      // Sync с ботом (если открыто через reply-keyboard)
-      if(tg && typeof tg.sendData==="function"){
-        try{ tg.sendData(JSON.stringify({type:"rate", payload:{date:todayYmd(), gel_rub:s.rateHistory[todayYmd()].gel_rub, usd_rub:s.rateHistory[todayYmd()].usd_rub, monthlyBudget:s.monthlyBudget, dailyLimit:s.dailyLimit}})); }catch(e){}
-      }
+      // Sync с сервером
+      var today=todayYmd(), tr=s.rateHistory[today]||{};
+      apiSend("/api/set-rate", {payload:{
+        date: today,
+        gel_rub: tr.gel_rub,
+        usd_rub: tr.usd_rub,
+        monthlyBudget: s.monthlyBudget,
+        dailyLimit: s.dailyLimit
+      }});
       haptic("medium"); closeSheets(); renderAll(); showToast("Настройки сохранены");
     }
     // Автоматически подставить курс из интернета.
