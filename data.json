@@ -175,6 +175,14 @@
       "author": "Ольга",
       "note": "кафе",
       "daysAgo": 4
+    },
+    {
+      "id": 14,
+      "amount": 93.5,
+      "category": "cafe",
+      "author": "Ольга",
+      "note": "ресторан",
+      "daysAgo": 3
     }
   ]
 }
