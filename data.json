@@ -81,14 +81,6 @@
       "daysAgo": 0
     },
     {
-      "id": 2,
-      "amount": 40.0,
-      "category": "food",
-      "author": "Ольга",
-      "note": "магазин",
-      "daysAgo": 0
-    },
-    {
       "id": 3,
       "amount": 10.0,
       "category": "food",
