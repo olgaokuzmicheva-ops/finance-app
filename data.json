@@ -167,6 +167,14 @@
       "author": "Ольга",
       "note": "обед в столовой",
       "daysAgo": 4
+    },
+    {
+      "id": 13,
+      "amount": 20.0,
+      "category": "cafe",
+      "author": "Ольга",
+      "note": "кафе",
+      "daysAgo": 4
     }
   ]
 }
