@@ -73,14 +73,6 @@
   ],
   "expenses": [
     {
-      "id": 1,
-      "amount": 19.0,
-      "category": "cafe",
-      "author": "Ольга",
-      "note": "кофе",
-      "daysAgo": 0
-    },
-    {
       "id": 3,
       "amount": 10.0,
       "category": "food",
