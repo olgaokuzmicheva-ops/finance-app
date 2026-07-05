@@ -183,6 +183,14 @@
       "author": "Ольга",
       "note": "ресторан",
       "daysAgo": 3
+    },
+    {
+      "id": 15,
+      "amount": 55.5,
+      "category": "food",
+      "author": "Ольга",
+      "note": "продукты",
+      "daysAgo": 3
     }
   ]
 }
