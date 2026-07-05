@@ -172,7 +172,7 @@
     .chips { display: flex; flex-wrap: wrap; gap: 8px; }
     .chip { border: none; cursor: pointer; font-family: inherit; background: #f2f5fb; color: var(--ink-2); font-size: 14px; font-weight: 600; padding: 11px 14px; border-radius: 13px; display: flex; align-items: center; gap: 7px; transition: all .15s ease; }
     .chip .e { font-size: 16px; }
-    .chip.active { background: var(--blue); color: #fff; }
+    .chip-add { background: var(--accent-soft, #f0e5d7); border: 1px dashed var(--ink-3, #999); } .chip.active { background: var(--blue); color: #fff; }
     .toggle2 { display: flex; gap: 8px; }
     .toggle2 button { flex: 1; border: none; cursor: pointer; font-family: inherit; background: #f2f5fb; color: var(--ink-2); font-size: 15px; font-weight: 600; padding: 14px; border-radius: 14px; transition: all .15s ease; }
     .toggle2 button.active { background: var(--navy); color: #fff; }
@@ -1715,9 +1715,24 @@
 
     // ---------- ADD form ----------
     function buildChips(){
-      $("catChips").innerHTML=DATA.categories.map(function(c){ return '<button class="chip" data-cat="'+c.id+'"><span class="e">'+c.icon+'</span>'+c.name+'</button>'; }).join("");
+      var html=DATA.categories.map(function(c){ return '<button class="chip" data-cat="'+c.id+'"><span class="e">'+c.icon+'</span>'+c.name+'</button>'; }).join("");
+      // Кнопка "+ Новая" — inline создание категории прямо из формы
+      html+='<button class="chip chip-add" data-cat="__new__"><span class="e">+</span>Новая</button>';
+      $("catChips").innerHTML=html;
       $("catChips").querySelectorAll(".chip").forEach(function(btn){
         btn.addEventListener("click",function(){
+          if(btn.getAttribute("data-cat")==="__new__"){
+            var name=(prompt("Название новой категории:")||"").trim();
+            if(!name) return;
+            var emoji=(prompt("Эмодзи для категории (по умолчанию 💠):")||"💠").trim();
+            var id="cat_"+Date.now();
+            DATA.categories.push({ id:id, name:name, icon:emoji, builtin:false });
+            buildChips();
+            // сразу выбираем свежесозданную
+            var freshBtn=$("catChips").querySelector('[data-cat="'+id+'"]');
+            if(freshBtn){ freshBtn.classList.add("active"); draft.category=id; haptic("medium"); validate(); }
+            return;
+          }
           $("catChips").querySelectorAll(".chip").forEach(function(b){b.classList.remove("active");});
           btn.classList.add("active"); draft.category=btn.getAttribute("data-cat"); haptic(); validate();
         });
@@ -1760,12 +1775,19 @@
       DATA.expenses.push(expense);
       haptic("medium");
       if(tg&&tg.HapticFeedback){ try{tg.HapticFeedback.notificationOccurred("success");}catch(e){} }
-      // Отправляем боту (Казначей): он запишет и сохранит на сервере
+      // Отправляем боту (Казначей): он запишет и сохранит на сервере.
+      // sendData работает только когда Mini App открыт через reply-keyboard кнопку.
+      // Из Menu Button - не работает: тогда предупреждаем пользователя.
+      var sent=false;
       if(tg && typeof tg.sendData==="function"){
-        try{ tg.sendData(JSON.stringify({type:"expense", payload:expense})); }catch(e){}
+        try{ tg.sendData(JSON.stringify({type:"expense", payload:expense})); sent=true; }catch(e){}
       }
       closeSheets(); renderAll();
-      showToast(fmtCur(gel,"GEL")+" · "+catById(draft.category).name);
+      if(sent){
+        showToast(fmtCur(gel,"GEL")+" · "+catById(draft.category).name+" · синхронизировано");
+      } else {
+        showToast("Сохранено локально. Открой через кнопку 💸 Финансы внизу чата, чтобы синхронизировать с ботом.");
+      }
     }
 
     // ---------- SETTINGS ----------
