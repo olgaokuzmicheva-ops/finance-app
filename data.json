@@ -80,242 +80,162 @@
   "expenses": [
     {
       "id": 1,
-      "amount": 6.95,
+      "amount": 49.31,
       "category": "food",
-      "author": "Ольга",
-      "note": "салями",
-      "date": "2026-07-05"
+      "author": "Папа",
+      "note": "Goodwill",
+      "date": "2026-06-28"
     },
     {
       "id": 2,
-      "amount": 8.64,
+      "amount": 36.1,
       "category": "food",
       "author": "Папа",
-      "note": "курица",
-      "date": "2026-07-05"
+      "note": "Белмарт",
+      "date": "2026-06-29"
     },
     {
       "id": 3,
-      "amount": 16.0,
-      "category": "cafe",
-      "author": "Ольга",
-      "note": "кофе",
-      "date": "2026-07-05"
+      "amount": 9.0,
+      "category": "food",
+      "author": "Папа",
+      "note": "Bulbaland",
+      "date": "2026-06-28"
     },
     {
       "id": 4,
-      "amount": 34.0,
-      "category": "food",
+      "amount": 21.0,
+      "category": "cafe",
       "author": "Папа",
-      "note": "яйца",
-      "date": "2026-07-05"
+      "note": "Pure Coffee",
+      "date": "2026-06-28"
     },
     {
       "id": 5,
-      "amount": 12.19,
-      "category": "other",
-      "author": "Ольга",
-      "note": "дезодорант",
-      "date": "2026-07-05"
+      "amount": 20.0,
+      "category": "cafe",
+      "author": "Папа",
+      "note": "Petit Boulangerie",
+      "date": "2026-06-29"
     },
     {
       "id": 6,
-      "amount": 24.89,
-      "category": "food",
-      "author": "Ольга",
-      "note": "продукты",
-      "date": "2026-07-05"
+      "amount": 77.7,
+      "category": "cafe",
+      "author": "Папа",
+      "note": "столовая",
+      "date": "2026-06-29"
     },
     {
       "id": 7,
-      "amount": 22.0,
+      "amount": 93.5,
       "category": "cafe",
-      "author": "Ольга",
-      "note": "кофе",
-      "date": "2026-07-04"
+      "author": "Папа",
+      "note": "Вартсихе Марани",
+      "date": "2026-06-30"
     },
     {
       "id": 8,
-      "amount": 1.85,
+      "amount": 45.0,
       "category": "food",
-      "author": "Ольга",
-      "note": "продукты",
-      "date": "2026-07-04"
+      "author": "Папа",
+      "note": "фрукты",
+      "date": "2026-06-30"
     },
     {
       "id": 9,
-      "amount": 22.0,
+      "amount": 55.5,
       "category": "food",
-      "author": "Ольга",
-      "note": "фрукты",
-      "date": "2026-07-04"
-    },
-    {
-      "id": 10,
-      "amount": 54.0,
-      "category": "cafe",
-      "author": "Ольга",
-      "note": "еда в кафе",
-      "date": "2026-07-04"
-    },
-    {
-      "id": 11,
-      "amount": 44.4,
-      "category": "food",
-      "author": "Ольга",
-      "note": "Белмарт",
-      "date": "2026-07-04"
-    },
-    {
-      "id": 12,
-      "amount": 77.7,
-      "category": "cafe",
-      "author": "Ольга",
-      "note": "обед в столовой",
+      "author": "Папа",
+      "note": "Alp Eren",
       "date": "2026-07-01"
     },
     {
-      "id": 13,
-      "amount": 20.0,
+      "id": 10,
+      "amount": 155.0,
       "category": "cafe",
-      "author": "Ольга",
-      "note": "кафе",
+      "author": "Папа",
+      "note": "Nord Coffee",
+      "date": "2026-06-30"
+    },
+    {
+      "id": 11,
+      "amount": 60.0,
+      "category": "food",
+      "author": "Папа",
+      "note": "PSH 115",
+      "date": "2026-06-29"
+    },
+    {
+      "id": 12,
+      "amount": 3.0,
+      "category": "food",
+      "author": "Папа",
+      "note": "фрукты",
+      "date": "2026-07-02"
+    },
+    {
+      "id": 13,
+      "amount": 11.0,
+      "category": "food",
+      "author": "Папа",
+      "note": "фрукты",
       "date": "2026-07-01"
     },
     {
       "id": 14,
-      "amount": 93.5,
-      "category": "cafe",
-      "author": "Ольга",
-      "note": "ресторан",
-      "date": "2026-07-02"
+      "amount": 65.39,
+      "category": "food",
+      "author": "Папа",
+      "note": "3 T.T.T",
+      "date": "2026-07-01"
     },
     {
       "id": 15,
-      "amount": 55.5,
-      "category": "food",
-      "author": "Ольга",
-      "note": "продукты",
-      "date": "2026-07-02"
+      "amount": 363.0,
+      "category": "cafe",
+      "author": "Папа",
+      "note": "Senate",
+      "date": "2026-07-01"
     },
     {
       "id": 16,
-      "amount": 100.0,
+      "amount": 19.0,
       "category": "cafe",
-      "author": "Ольга",
-      "note": "кофе",
+      "author": "Папа",
+      "note": "Pure Coffee",
       "date": "2026-07-02"
     },
     {
       "id": 17,
-      "amount": 45.0,
-      "category": "food",
-      "author": "Ольга",
-      "note": "фрукты",
+      "amount": 128.0,
+      "category": "clothing",
+      "author": "Папа",
+      "note": "New Yorker купальник",
       "date": "2026-07-02"
     },
     {
       "id": 18,
-      "amount": 73.0,
-      "category": "food",
-      "author": "Ольга",
-      "note": "продукты",
-      "date": "2026-07-02"
+      "amount": 60.0,
+      "category": "cafe",
+      "author": "Папа",
+      "note": "Eniki Beniki",
+      "date": "2026-07-03"
     },
     {
       "id": 19,
-      "amount": 62.0,
+      "amount": 46.0,
       "category": "food",
-      "author": "Ольга",
+      "author": "Папа",
       "note": "продукты",
       "date": "2026-07-03"
     },
     {
       "id": 20,
-      "amount": 17.6,
-      "category": "food",
-      "author": "Ольга",
-      "note": "продукты",
-      "date": "2026-07-03"
-    },
-    {
-      "id": 21,
-      "amount": 270.0,
-      "category": "cafe",
-      "author": "Ольга",
-      "note": "ресторан",
-      "date": "2026-07-03"
-    },
-    {
-      "id": 22,
-      "amount": 65.39,
-      "category": "food",
-      "author": "Ольга",
-      "note": "продукты",
-      "date": "2026-07-03"
-    },
-    {
-      "id": 23,
-      "amount": 11.0,
-      "category": "food",
-      "author": "Ольга",
-      "note": "фрукты",
-      "date": "2026-07-03"
-    },
-    {
-      "id": 24,
-      "amount": 3.0,
-      "category": "food",
-      "author": "Ольга",
-      "note": "фрукты",
-      "date": "2026-07-03"
-    },
-    {
-      "id": 25,
-      "amount": 34.0,
-      "category": "cafe",
-      "author": "Ольга",
-      "note": "кофе",
-      "date": "2026-07-03"
-    },
-    {
-      "id": 26,
       "amount": 15.0,
       "category": "clothing",
-      "author": "Ольга",
-      "note": "одежда",
-      "date": "2026-07-03"
-    },
-    {
-      "id": 27,
-      "amount": 46.0,
-      "category": "food",
-      "author": "Ольга",
-      "note": "продукты",
-      "date": "2026-07-03"
-    },
-    {
-      "id": 28,
-      "amount": 19.0,
-      "category": "cafe",
-      "author": "Ольга",
-      "note": "кофе",
-      "date": "2026-07-03"
-    },
-    {
-      "id": 29,
-      "amount": 128.0,
-      "category": "clothing",
-      "author": "Ольга",
-      "note": "купальник",
-      "date": "2026-07-03"
-    },
-    {
-      "id": 30,
-      "amount": 60.0,
-      "category": "cafe",
-      "author": "Ольга",
-      "note": "кафе",
+      "author": "Папа",
+      "note": "Shop 008",
       "date": "2026-07-03"
     }
   ]
