@@ -86,12 +86,15 @@
     .wk-fill { width: 100%; border-radius: 7px 7px 0 0; background: linear-gradient(180deg, var(--blue-light), var(--blue)); transition: height .45s cubic-bezier(.4,0,.2,1); min-height: 3px; }
     .wk-col.today .wk-fill { background: linear-gradient(180deg, #9db8ff, var(--blue)); box-shadow: 0 0 0 3px rgba(47,107,255,0.15); }
     .wk-col.today .wk-day { color: var(--blue); font-weight: 700; }
-    .wk-col.over .wk-fill { background: linear-gradient(180deg, #ff9d9d, #d64545); }
-    .wk-col.over .wk-val { color: #d64545; }
-    .wk-col.over.today .wk-fill { background: linear-gradient(180deg, #ffb0b0, #d64545); box-shadow: 0 0 0 3px rgba(214,69,69,.2); }
-    .wk-col.over::before { content: "⚠"; position: absolute; top: -4px; font-size: 12px; color: #d64545; }
+    .wk-col.over .wk-fill { background: linear-gradient(180deg, #ff7676, #c62828); }
+    .wk-col.over .wk-track { background: #fde3e3; }
+    .wk-col.over .wk-val { color: #c62828; font-weight: 800; }
+    .wk-col.over .wk-day { color: #c62828; font-weight: 800; }
+    .wk-col.over .wk-num { color: #c62828; font-weight: 700; }
+    .wk-col.over.today .wk-fill { background: linear-gradient(180deg, #ff8a8a, #c62828); box-shadow: 0 0 0 3px rgba(198,40,40,.22); }
+    .wk-col.over::after { content: "⚠"; position: absolute; top: -18px; left: 50%; transform: translateX(-50%); font-size: 15px; line-height: 1; color: #c62828; text-shadow: 0 1px 2px rgba(198,40,40,.25); }
     .wk-col { position: relative; }
-    .over-badge { display:inline-block; background:#fdecec; color:#d64545; padding:3px 9px; border-radius:12px; font-size:12px; font-weight:600; margin-left:8px }
+    .over-badge { display:inline-block; background:#fdecec; color:#c62828; padding:3px 9px; border-radius:12px; font-size:12px; font-weight:700; margin-left:8px }
     .wk-day { font-size: 12px; color: var(--ink-3); font-weight: 600; }
     .wk-num { font-size: 10px; color: var(--ink-3); }
     .week-foot { display: flex; justify-content: space-between; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); }
