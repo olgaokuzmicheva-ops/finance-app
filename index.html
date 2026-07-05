@@ -1756,9 +1756,14 @@
       var day=ymd(dateOf(draft.daysAgo));
       var gel=inputCur==="GEL"?raw:raw/rateForYmd(day,inputCur);
       var nextId=DATA.expenses.reduce(function(m,e){return Math.max(m,e.id);},0)+1;
-      DATA.expenses.push({ id:nextId, amount:Math.round(gel), category:draft.category, author:draft.author, note:$("inNote").value.trim(), daysAgo:draft.daysAgo });
+      var expense={ id:nextId, amount:Math.round(gel), category:draft.category, author:draft.author, note:$("inNote").value.trim(), daysAgo:draft.daysAgo };
+      DATA.expenses.push(expense);
       haptic("medium");
       if(tg&&tg.HapticFeedback){ try{tg.HapticFeedback.notificationOccurred("success");}catch(e){} }
+      // Отправляем боту (Казначей): он запишет и сохранит на сервере
+      if(tg && typeof tg.sendData==="function"){
+        try{ tg.sendData(JSON.stringify({type:"expense", payload:expense})); }catch(e){}
+      }
       closeSheets(); renderAll();
       showToast(fmtCur(gel,"GEL")+" · "+catById(draft.category).name);
     }
