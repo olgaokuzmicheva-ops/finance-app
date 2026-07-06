@@ -1538,7 +1538,13 @@
     function renderAll(){ renderOverview(); if ($("screen-analytics").classList.contains("active")) renderAnalytics(); }
 
     function inOverviewPeriod(e){
-      if(period==="week"){ var a=daysAgoOf(e); return a>=0&&a<=6; }
+      if(period==="week"){
+        // Календарная неделя: с понедельника этой недели по воскресенье.
+        var mon=mondayOf(0);
+        var sun=new Date(mon); sun.setDate(mon.getDate()+6);
+        var k=ymdOfExp(e);
+        return k>=ymd(mon) && k<=ymd(sun);
+      }
       // month: строго календарный текущий месяц (с 1 по последний день)
       return ymOfExp(e)===ymOf(0);
     }
