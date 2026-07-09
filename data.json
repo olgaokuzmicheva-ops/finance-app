@@ -479,14 +479,6 @@
       "date": "2026-07-09"
     },
     {
-      "id": 51,
-      "amount": 1584.0,
-      "category": "home",
-      "author": "Папа",
-      "note": "аренда квартиры (600$)",
-      "date": "2026-07-09"
-    },
-    {
       "id": 52,
       "amount": 600.0,
       "category": "transport",
