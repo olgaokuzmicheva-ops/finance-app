@@ -501,6 +501,14 @@
       "author": "Папа",
       "note": "яйца",
       "date": "2026-07-10"
+    },
+    {
+      "id": 55,
+      "amount": 9.0,
+      "category": "transport",
+      "author": "Папа",
+      "note": "такси",
+      "date": "2026-07-10"
     }
   ]
 }
