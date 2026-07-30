@@ -885,6 +885,14 @@
       "author": "Папа",
       "note": "Starbucks",
       "date": "2026-07-30"
+    },
+    {
+      "id": 98,
+      "amount": 20.0,
+      "category": "cafe",
+      "author": "Папа",
+      "note": "кофе",
+      "date": "2026-07-30"
     }
   ]
 }
