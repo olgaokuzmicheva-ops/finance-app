@@ -877,6 +877,14 @@
       "author": "Папа",
       "note": "такси",
       "date": "2026-07-30"
+    },
+    {
+      "id": 97,
+      "amount": 7.5,
+      "category": "cafe",
+      "author": "Папа",
+      "note": "Starbucks",
+      "date": "2026-07-30"
     }
   ]
 }
