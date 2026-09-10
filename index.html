@@ -255,6 +255,9 @@
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
         </button>
       </div>
+      <div class="row-between" id="modeRow" style="display:none">
+        <div class="cur-switch" id="modeSwitch"><button data-mode="personal" class="active">Личные</button><button data-mode="business">Бизнес</button></div>
+      </div>
       <div class="row-between">
         <span class="rate-hint" id="rateHint">курс —</span>
         <div class="cur-switch" id="curSwitch"><button data-cur="GEL" class="active">₾</button><button data-cur="RUB">₽</button><button data-cur="USD">$</button></div>
@@ -401,6 +404,21 @@
     var tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
     if (tg) { try { tg.ready(); tg.expand(); } catch (e) {} }
     function haptic(t) { try { if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred(t || "light"); } catch (e) {} }
+
+    var USER_ID = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id) ? String(tg.initDataUnsafe.user.id) : null;
+    var BUSINESS_USER = "285693254";
+    var MODE = "personal";
+    function EX() {
+      if (MODE === "business") {
+        if (!DATA.businessExpenses) DATA.businessExpenses = [];
+        return DATA.businessExpenses;
+      }
+      return DATA.expenses;
+    }
+    function setEX(arr) {
+      if (MODE === "business") DATA.businessExpenses = arr;
+      else DATA.expenses = arr;
+    }
 
     var EMBEDDED = {
   "settings": {
@@ -1531,6 +1549,20 @@
     function boot(){
       $("loading").style.display="none"; $("app").style.display="block"; $("navbar").style.display="flex";
       buildChips(); buildAuthorToggle(); buildEmojiGrid(); bindEvents();
+      if (USER_ID === BUSINESS_USER) {
+        $("modeRow").style.display = "flex";
+        $("modeSwitch").querySelectorAll("button").forEach(function(b){
+          b.addEventListener("click", function(){
+            var m = b.getAttribute("data-mode");
+            if (m === MODE) return;
+            MODE = m;
+            $("modeSwitch").querySelectorAll("button").forEach(function(bb){
+              bb.classList.toggle("active", bb.getAttribute("data-mode") === MODE);
+            });
+            haptic("light"); renderAll();
+          });
+        });
+      }
       renderAll();
       // Если курс на сегодня не задан — подтянем автоматически из ЦБ РФ
       try { autoRateIfMissing(); } catch(e) {}
@@ -1555,7 +1587,7 @@
       var s=DATA.settings;
       $("rateHint").textContent = "1 ₾ = "+fmtCur(rateForYmd(todayYmd(),"RUB"),"RUB")+" · сегодня";
 
-      var pe=DATA.expenses.filter(inOverviewPeriod);
+      var pe=EX().filter(inOverviewPeriod);
       var spentGel=sumGel(pe);
       var planGel=period==="month"?s.monthlyBudget:s.dailyLimit*7;
       var pct=planGel>0?Math.min(100,Math.round(spentGel/planGel*100)):0;
@@ -1573,7 +1605,7 @@
       $("heroFootLeft").innerHTML = leftGel<0 ? 'Перерасход <b class="over">'+moneyToday(Math.abs(leftGel))+"</b>" : "Осталось <b>"+moneyToday(leftGel)+"</b>";
       $("heroFootRight").textContent = period==="month" ? "Бюджет "+moneyToday(s.monthlyBudget) : "Ориентир "+moneyToday(s.dailyLimit)+"/день";
 
-      var todayList=DATA.expenses.filter(function(e){return daysAgoOf(e)===0;});
+      var todayList=EX().filter(function(e){return daysAgoOf(e)===0;});
       var todayGel=sumGel(todayList);
       var dLeftGel=s.dailyLimit-todayGel, dOver=dLeftGel<0;
       var dPct=s.dailyLimit>0?Math.min(100,Math.round(todayGel/s.dailyLimit*100)):0;
@@ -1593,8 +1625,8 @@
       var m=new Date(t); m.setDate(t.getDate()-fromMon-offset*7); m.setHours(0,0,0,0); return m;
     }
     function maxWeekOffset(){
-      if(!DATA.expenses.length) return 0;
-      var maxAgo=Math.max.apply(null,DATA.expenses.map(function(e){return daysAgoOf(e);}));
+      if(!EX().length) return 0;
+      var maxAgo=Math.max.apply(null,EX().map(function(e){return daysAgoOf(e);}));
       return Math.floor(maxAgo/7)+1;
     }
     function renderWeekChart(){
@@ -1605,7 +1637,7 @@
       // сумма по каждому дню (в выбранной валюте)
       var dayData=days.map(function(d){
         var key=ymd(d);
-        var list=DATA.expenses.filter(function(e){ return ymdOfExp(e)===key; });
+        var list=EX().filter(function(e){ return ymdOfExp(e)===key; });
         return { d:d, key:key, val:sumInCur(list,displayCur), gel:sumGel(list), isToday:key===tYmd, future:key>tYmd };
       });
       var max=Math.max.apply(null,dayData.map(function(x){return x.val;}).concat([1]));
@@ -1634,7 +1666,7 @@
         : mon.getDate()+" "+MONTHS_GEN[mon.getMonth()]+" — "+sun.getDate()+" "+MONTHS_GEN[sun.getMonth()];
       $("wkRange").textContent = weekOffset===0 ? "Эта неделя" : range;
 
-      var weekList=DATA.expenses.filter(function(e){ var k=ymdOfExp(e); return k>=ymd(mon)&&k<=ymd(sun); });
+      var weekList=EX().filter(function(e){ var k=ymdOfExp(e); return k>=ymd(mon)&&k<=ymd(sun); });
       var wsum=sumInCur(weekList,displayCur);
       var daysElapsed=weekOffset===0?((dateOf(0)-mon)/86400000+1):7;
       $("wkTotal").textContent=fmtCur(wsum,displayCur);
@@ -1660,7 +1692,7 @@
     // ---------- CATEGORY DETAIL ----------
     function openCatDetail(catId){
       var c=catById(catId);
-      var pe=DATA.expenses.filter(inOverviewPeriod).filter(function(e){return e.category===catId;});
+      var pe=EX().filter(inOverviewPeriod).filter(function(e){return e.category===catId;});
       $("catDetailTitle").textContent=c.icon+"  "+c.name;
       $("catDetailSub").textContent=moneyList(pe)+" · "+(period==="month"?"за месяц":"за неделю")+" · "+pe.length+" трат";
       var byDay={};
@@ -1681,9 +1713,9 @@
         body.querySelectorAll(".exp-del").forEach(function(btn){
           btn.addEventListener("click", function(){
             var id=parseInt(btn.getAttribute("data-id"),10);
-            DATA.expenses=DATA.expenses.filter(function(e){return e.id!==id;});
+            setEX(EX().filter(function(e){return e.id!==id;}));
             haptic("medium"); renderAll();
-            var still=DATA.expenses.filter(inOverviewPeriod).filter(function(e){return e.category===catId;});
+            var still=EX().filter(inOverviewPeriod).filter(function(e){return e.category===catId;});
             if(still.length) openCatDetail(catId); else closeSheets();
             showToast("Расход удалён");
           });
@@ -1702,7 +1734,7 @@
     }
     function monthsData(){
       var res={};
-      DATA.expenses.forEach(function(e){ var k=ymOfExp(e); (res[k]=res[k]||[]).push(e); });
+      EX().forEach(function(e){ var k=ymOfExp(e); (res[k]=res[k]||[]).push(e); });
       var keys=Object.keys(res).sort().slice(-6);
       return keys.map(function(k){
         var mi=parseInt(k.split("-")[1],10)-1;
@@ -1730,14 +1762,14 @@
             '<div class="stat"><div class="lbl">В среднем за месяц</div><div class="val">'+fmtCur(avgCur,displayCur)+'</div></div>'+
             '<div class="stat"><div class="lbl">Самый дорогой</div><div class="val">'+(maxMonth?fmtCur(maxMonth.cur,displayCur)+' <small>'+maxMonth.label+'</small>':"—")+'</div></div>'+
           '</div></div>'+
-          whoCard(DATA.expenses)+topCard(DATA.expenses,"за всё время");
+          whoCard(EX())+topCard(EX(),"за всё время");
       } else {
-        var cm=DATA.expenses.filter(inCurrentMonth);
+        var cm=EX().filter(inCurrentMonth);
         var spentCur=sumInCur(cm,displayCur);
         var now=new Date(), daysPassed=now.getDate(), daysInMonth=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
         var perDay=daysPassed?spentCur/daysPassed:0, projected=perDay*daysInMonth;
         var prevKey=(function(){ var d=new Date(now.getFullYear(),now.getMonth()-1,1); return d.getFullYear()+"-"+pad(d.getMonth()+1); })();
-        var prevGel=sumGel(DATA.expenses.filter(function(e){return ymOfExp(e)===prevKey;}));
+        var prevGel=sumGel(EX().filter(function(e){return ymOfExp(e)===prevKey;}));
         var curGel=sumGel(cm);
         var diffPct=prevGel>0?Math.round((curGel-prevGel)/prevGel*100):null;
         var projOverCur=convToday(s.monthlyBudget,displayCur);
@@ -1800,13 +1832,13 @@
       var btn=ev.target.closest("[data-del-id]");
       if(!btn) return;
       var id=parseInt(btn.getAttribute("data-del-id"),10);
-      var exp=DATA.expenses.find(function(e){return e.id===id;});
+      var exp=EX().find(function(e){return e.id===id;});
       if(!exp) return;
       var c=catById(exp.category);
       if(!confirm("Удалить: "+(exp.note||c.name)+" · "+fmtCur(exp.amount,"GEL")+"?")) return;
-      DATA.expenses = DATA.expenses.filter(function(e){return e.id!==id;});
+      setEX(EX().filter(function(e){return e.id!==id;}));
       renderAll();
-      apiSend("/api/delete-expense", {payload:{id:id}});
+      apiSend("/api/delete-expense", {payload:{id:id, contour:MODE}});
       showToast("Удалено");
     });
 
@@ -1905,7 +1937,7 @@
       var titleWd=WD_FULL ? WD_FULL[date.getDay()] : "";
       var title = isToday ? "Сегодня" : (dayKey===yesterdayKey ? "Вчера" : date.getDate()+" "+MONTHS_GEN[date.getMonth()]);
       $("dayDetailTitle").textContent=title;
-      var dayList=DATA.expenses.filter(function(e){ return ymdOfExp(e)===dayKey; });
+      var dayList=EX().filter(function(e){ return ymdOfExp(e)===dayKey; });
       var sum=sumInCur(dayList,displayCur);
       var sumGelDay=sumGel(dayList);
       var dailyLim=DATA.settings.dailyLimit||0;
@@ -1950,16 +1982,16 @@
       // конвертируем введённую валюту в лари по курсу ДНЯ траты
       var day=ymd(dateOf(draft.daysAgo));
       var gel=inputCur==="GEL"?raw:raw/rateForYmd(day,inputCur);
-      var nextId=DATA.expenses.reduce(function(m,e){return Math.max(m,e.id);},0)+1;
+      var allExp = (DATA.expenses||[]).concat(DATA.businessExpenses||[]);
+      var nextId = allExp.reduce(function(m,e){return Math.max(m,e.id);},0)+1;
       var expense={ id:nextId, amount:Math.round(gel), category:draft.category, author:draft.author, note:$("inNote").value.trim(), date:day, daysAgo:draft.daysAgo };
-      DATA.expenses.push(expense);
+      EX().push(expense);
       haptic("medium");
       if(tg&&tg.HapticFeedback){ try{tg.HapticFeedback.notificationOccurred("success");}catch(e){} }
       closeSheets(); renderAll();
       showToast(fmtCur(gel,"GEL")+" · "+catById(draft.category).name);
       // Отправляем на сервер (двусторонняя синхронизация через API-туннель).
-      // Работает при любом способе открытия Mini App (Menu Button, Reply-кнопка, inline).
-      apiSend("/api/add-expense", {payload: expense});
+      apiSend("/api/add-expense", {payload: Object.assign({}, expense, {contour: MODE})});
     }
 
     // ---------- SETTINGS ----------
@@ -1984,7 +2016,7 @@
     }
     function renderCatManage(){
       $("catManageList").innerHTML=DATA.categories.map(function(c){
-        var used=DATA.expenses.some(function(e){return e.category===c.id;});
+        var used=EX().some(function(e){return e.category===c.id;});
         var delBtn=c.builtin?'<span class="cm-tag">базовая</span>':
           '<button class="cm-del" data-id="'+c.id+'" aria-label="Удалить"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>';
         return '<div class="cm-item"><div class="cm-ico">'+c.icon+'</div><div class="cm-name">'+c.name+'</div>'+delBtn+'</div>';
@@ -1992,7 +2024,7 @@
       $("catManageList").querySelectorAll(".cm-del").forEach(function(btn){
         btn.addEventListener("click",function(){
           var id=btn.getAttribute("data-id");
-          if(DATA.expenses.some(function(e){return e.category===id;})){ showToast("Нельзя удалить: есть траты"); return; }
+          if(EX().some(function(e){return e.category===id;})){ showToast("Нельзя удалить: есть траты"); return; }
           DATA.categories=DATA.categories.filter(function(c){return c.id!==id;});
           haptic("medium"); buildChips(); renderCatManage(); renderAll(); showToast("Категория удалена");
         });
