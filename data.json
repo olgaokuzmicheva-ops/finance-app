@@ -1829,6 +1829,14 @@
       "author": "Папа",
       "note": "здравоохранение",
       "date": "2026-09-12"
+    },
+    {
+      "id": 224,
+      "amount": 60.0,
+      "category": "food",
+      "author": "Папа",
+      "note": "овощи-фрукты",
+      "date": "2026-09-12"
     }
   ],
   "businessExpenses": [
