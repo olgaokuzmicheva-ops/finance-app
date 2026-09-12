@@ -1837,6 +1837,14 @@
       "author": "Папа",
       "note": "овощи-фрукты",
       "date": "2026-09-12"
+    },
+    {
+      "id": 225,
+      "amount": 83.0,
+      "category": "food",
+      "author": "Папа",
+      "note": "продукты",
+      "date": "2026-09-12"
     }
   ],
   "businessExpenses": [
