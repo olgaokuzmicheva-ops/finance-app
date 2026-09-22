@@ -2105,6 +2105,14 @@
       "author": "Ольга",
       "note": "овощи",
       "date": "2026-09-22"
+    },
+    {
+      "id": 258,
+      "amount": 94.0,
+      "category": "food",
+      "author": "Ольга",
+      "note": "продукты",
+      "date": "2026-09-22"
     }
   ],
   "businessExpenses": [
