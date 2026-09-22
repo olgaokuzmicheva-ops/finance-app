@@ -1953,6 +1953,14 @@
       "author": "Папа",
       "note": "продукты",
       "date": "2026-09-20"
+    },
+    {
+      "id": 239,
+      "amount": 35.0,
+      "category": "cafe",
+      "author": "Папа",
+      "note": "кафе",
+      "date": "2026-09-20"
     }
   ],
   "businessExpenses": [
