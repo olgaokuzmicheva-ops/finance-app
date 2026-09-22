@@ -1961,6 +1961,14 @@
       "author": "Папа",
       "note": "кафе",
       "date": "2026-09-20"
+    },
+    {
+      "id": 240,
+      "amount": 106.0,
+      "category": "food",
+      "author": "Папа",
+      "note": "продукты",
+      "date": "2026-09-20"
     }
   ],
   "businessExpenses": [
