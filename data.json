@@ -1993,6 +1993,14 @@
       "author": "Ольга",
       "note": "аптека",
       "date": "2026-09-22"
+    },
+    {
+      "id": 244,
+      "amount": 68.3,
+      "category": "food",
+      "author": "Ольга",
+      "note": "продукты",
+      "date": "2026-09-21"
     }
   ],
   "businessExpenses": [
