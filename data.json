@@ -1985,6 +1985,14 @@
       "author": "Папа",
       "note": "аптека, промтовары",
       "date": "2026-09-21"
+    },
+    {
+      "id": 243,
+      "amount": 274.26,
+      "category": "health",
+      "author": "Ольга",
+      "note": "аптека",
+      "date": "2026-09-22"
     }
   ],
   "businessExpenses": [
