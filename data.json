@@ -1971,22 +1971,6 @@
       "date": "2026-09-20"
     },
     {
-      "id": 241,
-      "amount": 150.0,
-      "category": "food",
-      "author": "Папа",
-      "note": "продукты",
-      "date": "2026-09-21"
-    },
-    {
-      "id": 242,
-      "amount": 120.0,
-      "category": "health",
-      "author": "Папа",
-      "note": "аптека, промтовары",
-      "date": "2026-09-21"
-    },
-    {
       "id": 243,
       "amount": 274.26,
       "category": "other",
