@@ -2081,6 +2081,14 @@
       "author": "Ольга",
       "note": "косметика",
       "date": "2026-09-22"
+    },
+    {
+      "id": 255,
+      "amount": 31.0,
+      "category": "cafe",
+      "author": "Ольга",
+      "note": "кафе",
+      "date": "2026-09-22"
     }
   ],
   "businessExpenses": [
