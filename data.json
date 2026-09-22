@@ -2025,6 +2025,14 @@
       "author": "Ольга",
       "note": "косметика",
       "date": "2026-09-21"
+    },
+    {
+      "id": 248,
+      "amount": 51.0,
+      "category": "food",
+      "author": "Ольга",
+      "note": "продукты",
+      "date": "2026-09-21"
     }
   ],
   "businessExpenses": [
