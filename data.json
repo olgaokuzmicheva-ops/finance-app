@@ -2105,6 +2105,14 @@
       "author": "Папа",
       "note": "фрукты-овощи",
       "date": "2026-09-23"
+    },
+    {
+      "id": 262,
+      "amount": 115.0,
+      "category": "transport",
+      "author": "Папа",
+      "note": "бензин",
+      "date": "2026-09-23"
     }
   ],
   "businessExpenses": [
