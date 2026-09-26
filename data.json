@@ -2153,6 +2153,14 @@
       "author": "Папа",
       "note": "продукты",
       "date": "2026-09-25"
+    },
+    {
+      "id": 268,
+      "amount": 38.0,
+      "category": "food",
+      "author": "Папа",
+      "note": "продукты",
+      "date": "2026-09-26"
     }
   ],
   "businessExpenses": [
