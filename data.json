@@ -2177,6 +2177,14 @@
       "author": "Папа",
       "note": "одежда",
       "date": "2026-09-27"
+    },
+    {
+      "id": 271,
+      "amount": 44.0,
+      "category": "cafe",
+      "author": "Папа",
+      "note": "кафе",
+      "date": "2026-09-27"
     }
   ],
   "businessExpenses": [
