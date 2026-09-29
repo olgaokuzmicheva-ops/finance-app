@@ -2217,6 +2217,14 @@
       "author": "Папа",
       "note": "продукты",
       "date": "2026-09-29"
+    },
+    {
+      "id": 276,
+      "amount": 130.0,
+      "category": "other",
+      "author": "Папа",
+      "note": "одежда",
+      "date": "2026-09-29"
     }
   ],
   "businessExpenses": [
