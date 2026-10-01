@@ -2241,6 +2241,14 @@
       "author": "Папа",
       "note": "такси",
       "date": "2026-10-01"
+    },
+    {
+      "id": 279,
+      "amount": 10.0,
+      "category": "food",
+      "author": "Папа",
+      "note": "продукты",
+      "date": "2026-10-01"
     }
   ],
   "businessExpenses": [
